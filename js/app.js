@@ -3,6 +3,10 @@ import { h, shuffle, loadState, saveState, clearState, markStudyDay, gradeCard, 
 import { runQuiz } from './quiz.js';
 import { renderPractice } from './practice.js';
 import { renderCalculator } from './calculator.js';
+import { renderAccount, renderNewPassword } from './account.js';
+import { renderChat } from './chat.js';
+import { configured, currentUser, onAuthChange, consumeAuthRedirect } from './supa.js';
+import { syncNow, schedulePush } from './sync.js';
 
 const MASTERY = 80;
 const QUIZ_SIZE = 8;
@@ -14,7 +18,14 @@ let data = null;      // { unidades, byId, questions: Map }
 let loading = null;   // promesa de carga en curso
 let loadError = null;
 
-const save = () => { saveState(state); updateDueBadge(); };
+const save = () => { saveState(state); updateDueBadge(); schedulePush(() => state); };
+const applyMerged = (merged) => { state = loadStateFrom(merged); saveState(state); updateDueBadge(); };
+
+/** Valida un progreso que viene del servidor pasándolo por el mismo filtro que el local. */
+function loadStateFrom(obj) {
+  saveState(obj);
+  return loadState();
+}
 
 // ---------- Datos ----------
 
@@ -280,9 +291,11 @@ function viewNotFound() {
 let currentKind = '';
 
 function route() {
+  handleAuthRedirect();
   const parts = (location.hash.replace(/^#\/?/, '') || 'inicio').split('/');
   const [name, id, sub] = parts;
   const navKey = name === 'unidad' ? 'aprender' : name;
+  updateAccountLink();
   for (const a of document.querySelectorAll('[data-nav]')) {
     if (a.dataset.nav === navKey) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
@@ -297,6 +310,13 @@ function route() {
     case 'repasar': withData(kind, () => { viewReview(); done(); }); break;
     case 'practica': renderPractice(app, state, save); app.setAttribute('aria-busy', 'false'); break;
     case 'calculadora': renderCalculator(app); app.setAttribute('aria-busy', 'false'); break;
+    case 'asistente': renderChat(app); done(); break;
+    case 'cuenta':
+      if (id === 'nueva-clave') renderNewPassword(app);
+      else renderAccount(app, { mode: id === 'crear' ? 'crear' : 'entrar', message: authMessage, onSyncNow: () => syncNow(state, applyMerged), onDeleted: () => { authMessage = { kind: 'ok', text: 'Tu cuenta fue borrada.' }; route(); } });
+      authMessage = null;
+      done();
+      break;
     default: viewNotFound(); done();
   }
   window.scrollTo(0, 0);
@@ -314,5 +334,40 @@ dialog.addEventListener('close', () => {
   route();
 });
 
+let authMessage = null;
+
+function updateAccountLink() {
+  const link = document.getElementById('account-link');
+  if (!link) return;
+  const user = currentUser();
+  link.textContent = user ? 'Mi cuenta' : 'Entrar';
+  if (location.hash.startsWith('#cuenta')) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+}
+
+/** Procesa el enlace del correo (confirmación o recuperación) y deja la URL limpia. */
+function handleAuthRedirect() {
+  const redirect = configured ? consumeAuthRedirect() : null;
+  if (!redirect) return;
+  if (redirect.error) {
+    authMessage = { kind: 'error', text: redirect.error };
+    history.replaceState(null, '', '#cuenta');
+  } else if (redirect.type === 'recovery') {
+    history.replaceState(null, '', '#cuenta/nueva-clave');
+  } else {
+    authMessage = { kind: 'ok', text: 'Cuenta activada. Ya puedes usar el asistente y tu progreso se guarda en la nube.' };
+    history.replaceState(null, '', '#cuenta');
+  }
+}
+
+let wasLoggedIn = Boolean(currentUser());
+onAuthChange(() => {
+  const now = Boolean(currentUser());
+  if (now && !wasLoggedIn) syncNow(state, applyMerged);
+  if (now !== wasLoggedIn && /^#(cuenta|asistente)/.test(location.hash)) route();
+  wasLoggedIn = now;
+  updateAccountLink();
+});
+
 route();
 ensureData().catch(() => { /* el error se muestra en la vista que lo necesita */ });
+if (currentUser()) syncNow(state, applyMerged);

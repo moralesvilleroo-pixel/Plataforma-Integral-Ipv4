@@ -27,8 +27,10 @@
         <a href="#aprender" data-nav="aprender"><span class="nav__ico" aria-hidden="true">≡</span>Aprender</a>
         <a href="#repasar" data-nav="repasar"><span class="nav__ico" aria-hidden="true">↻</span>Repasar<span class="nav__count" data-due hidden></span></a>
         <a href="#practica" data-nav="practica"><span class="nav__ico" aria-hidden="true">/</span>Subnetear</a>
-        <a href="#calculadora" data-nav="calculadora"><span class="nav__ico" aria-hidden="true">#</span>Calculadora</a>
+        <a href="#asistente" data-nav="asistente"><span class="nav__ico" aria-hidden="true">?</span>Asistente</a>
+        <a href="#calculadora" data-nav="calculadora" class="nav__desk"><span class="nav__ico" aria-hidden="true">#</span>Calculadora</a>
       </nav>
+      <a class="account-link" id="account-link" href="#cuenta">Entrar</a>
     </div>
   </header>
 
@@ -38,7 +40,7 @@
 
   <footer class="foot">
     <div class="wrap foot__in">
-      <p>Prototipo de prueba. Tu progreso se guarda solo en este navegador.</p>
+      <p>Prototipo de prueba. Sin cuenta, tu progreso se guarda solo en este navegador.</p>
       <button type="button" class="btn btn--ghost btn--sm" id="reset-btn">Borrar mi progreso</button>
     </div>
   </footer>
@@ -46,7 +48,7 @@
   <dialog id="confirm" aria-labelledby="confirm-title">
     <form method="dialog" class="dialog">
       <h2 id="confirm-title">¿Borrar todo tu progreso?</h2>
-      <p>Se eliminan las unidades dominadas, el mazo de repaso y tu nivel de práctica en este navegador. No se puede deshacer.</p>
+      <p>Se eliminan las unidades dominadas, el mazo de repaso y tu nivel de práctica en este navegador. No se puede deshacer. Si tienes cuenta, lo guardado en la nube vuelve la próxima vez que sincronices.</p>
       <div class="row">
         <button class="btn btn--ghost" value="cancel">Cancelar</button>
         <button class="btn btn--danger" value="ok">Borrar progreso</button>

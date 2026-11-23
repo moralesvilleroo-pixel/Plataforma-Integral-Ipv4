@@ -1,5 +1,19 @@
 # Sitio estático sin compilación: se publica la carpeta tal cual.
-# Las cabeceras de seguridad están en _headers (funcionan también al arrastrar la carpeta a Netlify Drop).
+# Este archivo manda sobre la configuración de build del panel de Netlify.
+# Las cabeceras de seguridad están en _headers.
 [build]
   publish = "."
   command = ""
+
+# La carpeta supabase/ es para pegar en el panel de Supabase, no para servirla en la web.
+[[redirects]]
+  from = "/supabase/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/LEEME.md"
+  to = "/404.html"
+  status = 404
+  force = true
