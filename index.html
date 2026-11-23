@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SubnetPro: principios de redes y subneteo</title>
+  <meta name="description" content="Estudia el módulo de Principios de Redes con lecciones cortas, preguntas con retroalimentación, repaso espaciado y práctica de subneteo paso a paso.">
+  <meta name="theme-color" content="#1E3A8A">
+  <meta property="og:title" content="SubnetPro: principios de redes y subneteo">
+  <meta property="og:description" content="Lecciones, preguntas y práctica de subneteo para técnicos en montaje de redes.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#app">Saltar al contenido</a>
+
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a class="brand" href="#inicio" aria-label="SubnetPro, inicio">
+        <img src="favicon.svg" alt="" width="28" height="28">
+        <span>SubnetPro</span>
+      </a>
+      <nav class="nav" aria-label="Secciones">
+        <a href="#inicio" data-nav="inicio"><span class="nav__ico" aria-hidden="true">⌂</span>Inicio</a>
+        <a href="#aprender" data-nav="aprender"><span class="nav__ico" aria-hidden="true">≡</span>Aprender</a>
+        <a href="#repasar" data-nav="repasar"><span class="nav__ico" aria-hidden="true">↻</span>Repasar<span class="nav__count" data-due hidden></span></a>
+        <a href="#practica" data-nav="practica"><span class="nav__ico" aria-hidden="true">/</span>Subnetear</a>
+        <a href="#calculadora" data-nav="calculadora"><span class="nav__ico" aria-hidden="true">#</span>Calculadora</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app" class="wrap main" tabindex="-1" aria-busy="true">
+    <noscript><p class="panel">Esta aplicación necesita JavaScript activado.</p></noscript>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot__in">
+      <p>Prototipo de prueba. Tu progreso se guarda solo en este navegador.</p>
+      <button type="button" class="btn btn--ghost btn--sm" id="reset-btn">Borrar mi progreso</button>
+    </div>
+  </footer>
+
+  <dialog id="confirm" aria-labelledby="confirm-title">
+    <form method="dialog" class="dialog">
+      <h2 id="confirm-title">¿Borrar todo tu progreso?</h2>
+      <p>Se eliminan las unidades dominadas, el mazo de repaso y tu nivel de práctica en este navegador. No se puede deshacer.</p>
+      <div class="row">
+        <button class="btn btn--ghost" value="cancel">Cancelar</button>
+        <button class="btn btn--danger" value="ok">Borrar progreso</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

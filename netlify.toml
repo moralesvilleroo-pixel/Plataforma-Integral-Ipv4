@@ -1,0 +1,5 @@
+# Sitio estático sin compilación: se publica la carpeta tal cual.
+# Las cabeceras de seguridad están en _headers (funcionan también al arrastrar la carpeta a Netlify Drop).
+[build]
+  publish = "."
+  command = ""
