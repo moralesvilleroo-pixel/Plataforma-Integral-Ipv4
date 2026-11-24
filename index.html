@@ -2,53 +2,92 @@
 <html lang="es-CO">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>SubnetPro: principios de redes y subneteo</title>
-  <meta name="description" content="Estudia el módulo de Principios de Redes con lecciones cortas, preguntas con retroalimentación, repaso espaciado y práctica de subneteo paso a paso.">
+  <meta name="description" content="Estudia el módulo de Principios de Redes con lecciones cortas, preguntas con retroalimentación, repaso espaciado, práctica de subneteo y un asistente de redes.">
   <meta name="theme-color" content="#1E3A8A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SubnetPro">
   <meta property="og:title" content="SubnetPro: principios de redes y subneteo">
-  <meta property="og:description" content="Lecciones, preguntas y práctica de subneteo para técnicos en montaje de redes.">
+  <meta property="og:description" content="Lecciones, repaso, práctica de subneteo y asistente para técnicos en montaje de redes.">
   <meta property="og:type" content="website">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/app.css">
   <script type="module" src="js/app.js"></script>
 </head>
 <body>
   <a class="skip" href="#app">Saltar al contenido</a>
 
-  <header class="topbar">
-    <div class="wrap topbar__in">
-      <a class="brand" href="#inicio" aria-label="SubnetPro, inicio">
-        <img src="favicon.svg" alt="" width="28" height="28">
-        <span>SubnetPro</span>
-      </a>
+  <!-- Iconos propios: trazos simples que se leen a 20 px en la barra inferior del celular. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-learn" viewBox="0 0 24 24"><path d="M4 6h10M4 12h16M4 18h12"/><circle cx="18" cy="6" r="2"/></symbol>
+    <symbol id="i-review" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5"/></symbol>
+    <symbol id="i-slash" viewBox="0 0 24 24"><path d="M15 4 9 20"/><circle cx="5.5" cy="7" r="1.6"/><circle cx="18.5" cy="17" r="1.6"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-7l-4.5 3.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 10.5h7"/></symbol>
+    <symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8h7M8.5 12.5h1M12 12.5h0M15 12.5h.5M8.5 16.5h1M12 16.5h0M15 16.5h.5"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 19.5c1.2-3.3 3.8-5 7-5s5.8 1.7 7 5"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M9 4.5v15"/></symbol>
+  </svg>
+
+  <div class="shell" id="shell">
+    <aside class="rail" aria-label="Navegación principal">
+      <div class="rail__top">
+        <a class="brand" href="#inicio" aria-label="SubnetPro, inicio">
+          <img src="favicon.svg" alt="" width="32" height="32">
+          <span class="rail__label">SubnetPro</span>
+        </a>
+        <button class="rail__toggle" type="button" id="rail-toggle" aria-expanded="true" aria-controls="shell" aria-label="Contraer menú">
+          <svg aria-hidden="true"><use href="#i-panel"/></svg>
+        </button>
+      </div>
+
       <nav class="nav" aria-label="Secciones">
-        <a href="#inicio" data-nav="inicio"><span class="nav__ico" aria-hidden="true">⌂</span>Inicio</a>
-        <a href="#aprender" data-nav="aprender"><span class="nav__ico" aria-hidden="true">≡</span>Aprender</a>
-        <a href="#repasar" data-nav="repasar"><span class="nav__ico" aria-hidden="true">↻</span>Repasar<span class="nav__count" data-due hidden></span></a>
-        <a href="#practica" data-nav="practica"><span class="nav__ico" aria-hidden="true">/</span>Subnetear</a>
-        <a href="#asistente" data-nav="asistente"><span class="nav__ico" aria-hidden="true">?</span>Asistente</a>
-        <a href="#calculadora" data-nav="calculadora" class="nav__desk"><span class="nav__ico" aria-hidden="true">#</span>Calculadora</a>
+        <a href="#inicio" data-nav="inicio" title="Inicio"><svg aria-hidden="true"><use href="#i-home"/></svg><span class="rail__label">Inicio</span></a>
+        <a href="#aprender" data-nav="aprender" title="Aprender"><svg aria-hidden="true"><use href="#i-learn"/></svg><span class="rail__label">Aprender</span></a>
+        <a href="#repasar" data-nav="repasar" title="Repasar"><svg aria-hidden="true"><use href="#i-review"/></svg><span class="rail__label">Repasar</span><span class="nav__count" data-due hidden></span></a>
+        <a href="#practica" data-nav="practica" title="Subnetear"><svg aria-hidden="true"><use href="#i-slash"/></svg><span class="rail__label">Subnetear</span></a>
+        <a href="#asistente" data-nav="asistente" title="Asistente"><svg aria-hidden="true"><use href="#i-chat"/></svg><span class="rail__label">Asistente</span></a>
+        <a href="#calculadora" data-nav="calculadora" class="nav__desk" title="Calculadora"><svg aria-hidden="true"><use href="#i-calc"/></svg><span class="rail__label">Calculadora</span></a>
       </nav>
-      <a class="account-link" id="account-link" href="#cuenta">Entrar</a>
-    </div>
-  </header>
 
-  <main id="app" class="wrap main" tabindex="-1" aria-busy="true">
-    <noscript><p class="panel">Esta aplicación necesita JavaScript activado.</p></noscript>
-  </main>
+      <div class="rail__foot">
+        <div class="rail__progress" id="rail-progress" hidden>
+          <span class="ring" aria-hidden="true"><span class="ring__fill" id="ring-fill"></span></span>
+          <span class="rail__label"><b id="rail-progress-num">0/8</b> unidades dominadas</span>
+        </div>
+        <a class="chip-user" id="account-link" href="#cuenta">
+          <span class="chip-user__avatar" id="account-avatar" aria-hidden="true"><svg><use href="#i-user"/></svg></span>
+          <span class="rail__label chip-user__text"><b id="account-name">Entrar</b><small id="account-sub">Guarda tu progreso</small></span>
+        </a>
+      </div>
+    </aside>
 
-  <footer class="foot">
-    <div class="wrap foot__in">
-      <p>Prototipo de prueba. Sin cuenta, tu progreso se guarda solo en este navegador.</p>
-      <button type="button" class="btn btn--ghost btn--sm" id="reset-btn">Borrar mi progreso</button>
+    <div class="stage">
+      <header class="appbar">
+        <a class="brand" href="#inicio" aria-label="SubnetPro, inicio">
+          <img src="favicon.svg" alt="" width="28" height="28">
+          <span>SubnetPro</span>
+        </a>
+        <a class="appbar__account" id="account-link-m" href="#cuenta" aria-label="Tu cuenta">
+          <span class="chip-user__avatar" id="account-avatar-m" aria-hidden="true"><svg><use href="#i-user"/></svg></span>
+        </a>
+      </header>
+
+      <main id="app" class="main" tabindex="-1" aria-busy="true">
+        <noscript><p class="panel">Esta aplicación necesita JavaScript activado.</p></noscript>
+      </main>
     </div>
-  </footer>
+  </div>
 
   <dialog id="confirm" aria-labelledby="confirm-title">
     <form method="dialog" class="dialog">
-      <h2 id="confirm-title">¿Borrar todo tu progreso?</h2>
-      <p>Se eliminan las unidades dominadas, el mazo de repaso y tu nivel de práctica en este navegador. No se puede deshacer. Si tienes cuenta, lo guardado en la nube vuelve la próxima vez que sincronices.</p>
+      <h2 id="confirm-title">¿Borrar tu progreso de este dispositivo?</h2>
+      <p>Se eliminan las unidades dominadas, el mazo de repaso y tu nivel de práctica guardados aquí. Si tienes cuenta, lo guardado en la nube vuelve la próxima vez que sincronices.</p>
       <div class="row">
         <button class="btn btn--ghost" value="cancel">Cancelar</button>
         <button class="btn btn--danger" value="ok">Borrar progreso</button>

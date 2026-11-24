@@ -62,6 +62,7 @@ const validIds = () => new Set(data ? data.questions.keys() : []);
 function updateDueBadge() {
   const badge = document.querySelector('[data-due]');
   if (!badge || !data) return;
+  updateRailProgress();
   const n = dueIds(state, validIds()).length;
   badge.hidden = n === 0;
   badge.textContent = n > 99 ? '99+' : String(n);
@@ -313,7 +314,14 @@ function route() {
     case 'asistente': renderChat(app); done(); break;
     case 'cuenta':
       if (id === 'nueva-clave') renderNewPassword(app);
-      else renderAccount(app, { mode: id === 'crear' ? 'crear' : 'entrar', message: authMessage, onSyncNow: () => syncNow(state, applyMerged), onDeleted: () => { authMessage = { kind: 'ok', text: 'Tu cuenta fue borrada.' }; route(); } });
+      else renderAccount(app, {
+        mode: id === 'crear' ? 'crear' : 'entrar',
+        message: authMessage,
+        onSyncNow: () => syncNow(state, applyMerged),
+        onDeleted: () => { authMessage = { kind: 'ok', text: 'Tu cuenta fue borrada.' }; route(); },
+        canInstall: () => Boolean(installPrompt),
+        onInstall: async () => { installPrompt?.prompt(); await installPrompt?.userChoice; installPrompt = null; },
+      });
       authMessage = null;
       done();
       break;
@@ -325,7 +333,6 @@ function route() {
 window.addEventListener('hashchange', route);
 
 const dialog = document.getElementById('confirm');
-document.getElementById('reset-btn').addEventListener('click', () => dialog.showModal());
 dialog.addEventListener('close', () => {
   if (dialog.returnValue !== 'ok') return;
   clearState();
@@ -337,11 +344,66 @@ dialog.addEventListener('close', () => {
 let authMessage = null;
 
 function updateAccountLink() {
-  const link = document.getElementById('account-link');
-  if (!link) return;
   const user = currentUser();
-  link.textContent = user ? 'Mi cuenta' : 'Entrar';
-  if (location.hash.startsWith('#cuenta')) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+  const label = user?.name ?? user?.email ?? '';
+  const initial = user ? label.trim().charAt(0).toUpperCase() || '?' : '?';
+  const onAccount = location.hash.startsWith('#cuenta');
+  for (const id of ['account-link', 'account-link-m']) {
+    const link = document.getElementById(id);
+    if (!link) continue;
+    if (onAccount) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+  }
+  for (const id of ['account-avatar', 'account-avatar-m']) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (user) { el.textContent = initial; continue; }
+    // Sin sesión: silueta de persona en vez de una letra.
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#i-user');
+    svg.append(use);
+    el.replaceChildren(svg);
+  }
+  const name = document.getElementById('account-name');
+  const sub = document.getElementById('account-sub');
+  if (name) name.textContent = user ? (user.name ?? 'Mi cuenta') : 'Entrar';
+  if (sub) sub.textContent = user ? (user.email ?? '') : 'Guarda tu progreso';
+  document.getElementById('account-link-m')?.setAttribute('aria-label', user ? 'Mi cuenta' : 'Entrar o crear cuenta');
+}
+
+function updateRailProgress() {
+  const box = document.getElementById('rail-progress');
+  if (!box || !data) return;
+  const total = data.unidades.length;
+  const done = data.unidades.filter((u) => state.units[u.id]?.mastered).length;
+  box.hidden = false;
+  document.getElementById('rail-progress-num').textContent = `${done}/${total}`;
+  box.querySelector('.ring').style.setProperty('--p', String(Math.round((done / total) * 100)));
+}
+
+// ---------- Barra lateral contraíble ----------
+
+const RAIL_KEY = 'subnetpro:rail';
+const shell = document.getElementById('shell');
+const railToggle = document.getElementById('rail-toggle');
+function setRail(collapsed, remember) {
+  shell.classList.toggle('is-collapsed', collapsed);
+  railToggle.setAttribute('aria-expanded', String(!collapsed));
+  railToggle.setAttribute('aria-label', collapsed ? 'Expandir menú' : 'Contraer menú');
+  if (remember) { try { localStorage.setItem(RAIL_KEY, collapsed ? '1' : '0'); } catch { /* sin almacenamiento */ } }
+}
+let savedRail = null;
+try { savedRail = localStorage.getItem(RAIL_KEY); } catch { savedRail = null; }
+setRail(savedRail === null ? matchMedia('(max-width: 1024px)').matches : savedRail === '1', false);
+railToggle.addEventListener('click', () => setRail(!shell.classList.contains('is-collapsed'), true));
+
+// ---------- Instalación como app (PWA) ----------
+
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; });
+window.addEventListener('appinstalled', () => { installPrompt = null; });
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(() => { /* sin service worker la app funciona igual, solo que no offline */ });
 }
 
 /** Procesa el enlace del correo (confirmación o recuperación) y deja la URL limpia. */

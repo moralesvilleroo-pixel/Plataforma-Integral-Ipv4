@@ -21,7 +21,12 @@ function setSession(s) {
     access_token: s.access_token,
     refresh_token: s.refresh_token,
     expires_at: s.expires_at ?? Math.floor(Date.now() / 1000) + Number(s.expires_in ?? 3600),
-    user: s.user ? { id: s.user.id, email: s.user.email } : session?.user ?? null,
+    user: s.user ? {
+      id: s.user.id,
+      email: s.user.email,
+      name: s.user.user_metadata?.full_name ?? s.user.user_metadata?.name ?? null,
+      provider: s.user.app_metadata?.provider ?? 'email',
+    } : session?.user ?? null,
   } : null;
   try {
     if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
@@ -105,6 +110,12 @@ export async function signIn(email, password) {
 export async function signOut() {
   try { await request('/auth/v1/logout', { method: 'POST' }); } catch { /* se cierra localmente igual */ }
   setSession(null);
+}
+
+/** Inicio con Google: Supabase hace el intercambio y devuelve los tokens en el enlace de regreso. */
+export function signInWithGoogle() {
+  if (!configured) throw new SupaError('not_configured', 'Las cuentas aún no están activadas en esta versión.', 0);
+  location.assign(`${base}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo())}`);
 }
 
 export const recoverPassword = (email) =>
