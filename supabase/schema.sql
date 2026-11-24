@@ -47,7 +47,7 @@ create policy "progreso propio: actualizar" on public.progress
 drop policy if exists "uso propio: leer" on public.chat_usage;
 create policy "uso propio: leer" on public.chat_usage
   for select to authenticated using (user_id = (select auth.uid()));
--- chat_usage solo se escribe con consume_chat(), así nadie se regala mensajes.
+-- chat_usage solo se escribe con consume_chat(), que solo suma: nadie se regala mensajes.
 
 -- Crea el perfil al registrarse.
 create or replace function public.handle_new_user()
@@ -75,20 +75,19 @@ returns integer language sql immutable as $$
   select case p_tier when 'premium' then 200 else 15 end;
 $$;
 
--- Descuenta un mensaje del día (hora de Colombia) y dice si está permitido.
--- Solo lo llama la Edge Function (service_role) después de validar la sesión.
-drop function if exists public.consume_chat();
-create or replace function public.consume_chat(p_uid uuid)
+-- Descuenta un mensaje del día al estudiante que llama (hora de Colombia).
+-- Si alguien la llama por su cuenta, solo gasta sus propias preguntas.
+create or replace function public.consume_chat()
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare
-  v_uid   uuid := p_uid;
+  v_uid   uuid := auth.uid();
   v_today date := (now() at time zone 'America/Bogota')::date;
   v_tier  text;
   v_used  integer;
   v_lim   integer;
 begin
   if v_uid is null then
-    raise exception 'missing_user' using errcode = '22023';
+    raise exception 'not_authenticated' using errcode = '42501';
   end if;
 
   select tier into v_tier from public.profiles where id = v_uid;
@@ -109,16 +108,6 @@ begin
    where user_id = v_uid and usage_date = v_today;
 
   return jsonb_build_object('allowed', true, 'limit', v_lim, 'remaining', v_lim - v_used - 1);
-end;
-$$;
-
--- Devuelve el mensaje si la IA falló, para no cobrarlo. Solo lo llama el servidor (service_role).
-drop function if exists public.refund_chat();
-create or replace function public.refund_chat(p_uid uuid)
-returns void language plpgsql security definer set search_path = '' as $$
-begin
-  update public.chat_usage set used = greatest(used - 1, 0)
-   where user_id = p_uid and usage_date = (now() at time zone 'America/Bogota')::date;
 end;
 $$;
 
@@ -148,12 +137,10 @@ end;
 $$;
 
 -- Solo usuarios con sesión pueden llamar a las funciones.
-revoke all on function public.consume_chat(uuid)  from public, anon, authenticated;
-revoke all on function public.refund_chat(uuid)   from public, anon, authenticated;
+revoke all on function public.consume_chat()      from public, anon;
 revoke all on function public.chat_status()       from public, anon;
 revoke all on function public.delete_my_account() from public, anon;
 revoke all on function public.handle_new_user()   from public, anon, authenticated;
-grant execute on function public.consume_chat(uuid)  to service_role;
-grant execute on function public.refund_chat(uuid)   to service_role;
+grant execute on function public.consume_chat()      to authenticated;
 grant execute on function public.chat_status()       to authenticated;
 grant execute on function public.delete_my_account() to authenticated;

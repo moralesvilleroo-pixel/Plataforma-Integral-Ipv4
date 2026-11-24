@@ -161,27 +161,29 @@ Deno.serve(async (req) => {
   const messages = parseMessages(body);
   if (!messages) return reply(req, { error: 'bad_request' }, 400);
 
-  // Solo se usa en el servidor: valida el token del estudiante y lleva la cuenta de mensajes.
-  const admin = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SB_SECRET_KEY') ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
-  const { data: userData, error: userErr } = await admin.auth.getUser(auth.slice(7));
+  // Todo se hace con la sesión del propio estudiante: no hace falta ninguna llave secreta de Supabase.
+  const asUser = createClient(Deno.env.get('SUPABASE_URL')!, req.headers.get('apikey') ?? '', {
+    global: { headers: { Authorization: auth } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data: userData, error: userErr } = await asUser.auth.getUser(auth.slice(7));
   if (userErr || !userData.user || userData.user.is_anonymous) return reply(req, { error: 'not_authenticated' }, 401);
-  const uid = userData.user.id;
 
-  const { data: quota, error: quotaErr } = await admin.rpc('consume_chat', { p_uid: uid });
-  if (quotaErr) { console.error(quotaErr); return reply(req, { error: 'quota_error' }, 500); }
-  if (!quota?.allowed) return reply(req, { error: 'limit_reached', limit: quota?.limit ?? 0, remaining: 0 }, 429);
+  const { data: status, error: statusErr } = await asUser.rpc('chat_status');
+  if (statusErr) { console.error(statusErr); return reply(req, { error: 'quota_error' }, 500); }
+  if ((status?.remaining ?? 0) <= 0) return reply(req, { error: 'limit_reached', limit: status?.limit ?? 0, remaining: 0 }, 429);
 
+  let text: string;
   try {
-    const text = PROVIDER === 'gemini' ? await askGemini(messages) : await askAnthropic(messages);
+    text = PROVIDER === 'gemini' ? await askGemini(messages) : await askAnthropic(messages);
     if (!text) throw new Error('empty_reply');
-    return reply(req, { reply: text, remaining: quota.remaining, limit: quota.limit });
   } catch (err) {
     console.error(err);
-    await admin.rpc('refund_chat', { p_uid: uid });
     return reply(req, { error: 'provider_error' }, 502);
   }
+
+  // Se descuenta solo cuando hubo respuesta, así un fallo de la IA no le cuesta la pregunta al estudiante.
+  const { data: used, error: usedErr } = await asUser.rpc('consume_chat');
+  if (usedErr) console.error(usedErr);
+  return reply(req, { reply: text, remaining: used?.remaining ?? Math.max((status?.remaining ?? 1) - 1, 0), limit: status?.limit });
 });
