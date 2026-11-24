@@ -5,6 +5,9 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const PROVIDER = (Deno.env.get('AI_PROVIDER') ?? 'anthropic').toLowerCase();
 const ANTHROPIC_MODEL = Deno.env.get('ANTHROPIC_MODEL') ?? 'claude-haiku-5-5';
 const GEMINI_MODEL = Deno.env.get('GEMINI_MODEL') ?? 'gemini-3.8-flash';
+// Modelos de respaldo, separados por comas, por si el principal está saturado.
+const GEMINI_FALLBACKS = (Deno.env.get('GEMINI_FALLBACK_MODELS') ?? 'gemini-3.5-flash-lite,gemini-3.6-flash')
+  .split(',').map((m) => m.trim()).filter(Boolean);
 const MAX_TURNS = 10;
 const MAX_CHARS = 800;
 const MAX_OUTPUT_TOKENS = 700;
@@ -126,15 +129,21 @@ async function askAnthropic(messages: Msg[]): Promise<string> {
     headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({ model: ANTHROPIC_MODEL, max_tokens: MAX_OUTPUT_TOKENS, system: SYSTEM, messages }),
   });
-  if (!res.ok) throw new Error(`anthropic_${res.status}: ${(await res.text()).slice(0, 300)}`);
+  if (!res.ok) {
+    const detail = `anthropic_${res.status}: ${(await res.text()).slice(0, 300)}`;
+    throw res.status === 429 || res.status >= 500 ? new BusyError(detail) : new Error(detail);
+  }
   const data = await res.json();
   return (data.content ?? []).filter((b: { type: string }) => b.type === 'text').map((b: { text: string }) => b.text).join('\n').trim();
 }
 
-async function askGemini(messages: Msg[]): Promise<string> {
-  const key = Deno.env.get('GEMINI_API_KEY');
-  if (!key) throw new Error('missing_gemini_key');
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent`;
+/** Error de la IA que vale la pena reintentar con otro modelo (saturación o límite). */
+class BusyError extends Error {}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function geminiOnce(model: string, messages: Msg[], key: string): Promise<string> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
@@ -144,9 +153,32 @@ async function askGemini(messages: Msg[]): Promise<string> {
       generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.3 },
     }),
   });
-  if (!res.ok) throw new Error(`gemini_${res.status}: ${(await res.text()).slice(0, 300)}`);
+  if (!res.ok) {
+    const detail = `gemini_${res.status} (${model}): ${(await res.text()).slice(0, 300)}`;
+    if (res.status === 429 || res.status >= 500 || res.status === 404) throw new BusyError(detail);
+    throw new Error(detail);
+  }
   const data = await res.json();
   return (data.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? '').join('').trim();
+}
+
+/** Prueba el modelo principal y, si está saturado, los de respaldo. */
+async function askGemini(messages: Msg[]): Promise<string> {
+  const key = Deno.env.get('GEMINI_API_KEY');
+  if (!key) throw new Error('missing_gemini_key');
+  const models = [...new Set([GEMINI_MODEL, ...GEMINI_FALLBACKS])];
+  let last: unknown = null;
+  for (const [i, model] of models.entries()) {
+    try {
+      return await geminiOnce(model, messages, key);
+    } catch (err) {
+      if (!(err instanceof BusyError)) throw err;
+      console.error(err.message);
+      last = err;
+      if (i < models.length - 1) await sleep(400);
+    }
+  }
+  throw last;
 }
 
 Deno.serve(async (req) => {
@@ -179,6 +211,7 @@ Deno.serve(async (req) => {
     if (!text) throw new Error('empty_reply');
   } catch (err) {
     console.error(err);
+    if (err instanceof BusyError) return reply(req, { error: 'provider_busy' }, 503);
     return reply(req, { error: 'provider_error' }, 502);
   }
 

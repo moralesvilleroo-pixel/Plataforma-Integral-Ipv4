@@ -140,6 +140,8 @@ export function renderChat(root) {
         ? 'Llegaste al límite de preguntas de hoy. Mañana se renueva.'
         : err.code === 'not_authenticated'
           ? 'Tu sesión terminó. Inicia sesión otra vez.'
+          : err.code === 'provider_busy'
+            ? 'La IA está muy ocupada en este momento. Espera un minuto y vuelve a intentarlo; la pregunta no se descontó.'
           : err.code === 'network'
             ? 'No hay conexión. Revisa tu internet e inténtalo de nuevo.'
             : 'El asistente no pudo responder. Tu pregunta no se descontó; inténtalo otra vez.';
