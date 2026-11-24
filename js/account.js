@@ -233,7 +233,8 @@ function authScreen(root, opts) {
     h('h1', { class: 'visually-hidden', tabindex: '-1', text: 'Tu cuenta' }),
     opts.message ? notice(opts.message.kind, opts.message.text) : null,
     card,
-    deviceSection(opts)));
+    deviceSection(opts),
+    legalLinks()));
   opts.message = null;
 }
 
@@ -251,6 +252,12 @@ function syncLine() {
   draw(syncStatus);
   const off = onSync((s) => { if (p.isConnected) draw(s); else off(); });
   return p;
+}
+
+function legalLinks() {
+  return h('p', { class: 'legal' },
+    h('a', { href: 'privacidad.html', text: 'Política de privacidad' }),
+    h('a', { href: 'eliminar-cuenta.html', text: 'Cómo borrar tu cuenta' }));
 }
 
 function deviceSection(opts) {
@@ -309,6 +316,7 @@ function loggedIn(root, opts) {
       h('p', { class: 'muted', text: 'Elimina tu cuenta y los datos guardados en la nube.' }),
       out,
       h('button', { class: 'btn btn--danger', type: 'button', text: 'Borrar mi cuenta', onclick: () => del.showModal() })),
+    legalLinks(),
     del));
   opts.message = null;
 }
@@ -317,7 +325,8 @@ export function renderAccount(root, opts) {
   if (!configured) {
     root.replaceChildren(h('div', { class: 'enter account' },
       head('Tu cuenta', 'Las cuentas aún no están activadas en esta versión: tu progreso se guarda en este dispositivo.'),
-      deviceSection(opts)));
+      deviceSection(opts),
+      legalLinks()));
     return;
   }
   if (currentUser()) loggedIn(root, opts);

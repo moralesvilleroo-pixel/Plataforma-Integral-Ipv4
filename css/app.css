@@ -530,3 +530,18 @@ dialog::backdrop { background: rgba(11, 18, 32, 0.7); }
 
 /* Los títulos reciben foco por código al cambiar de vista; no son controles. */
 [tabindex="-1"]:focus { outline: none; box-shadow: none; }
+
+/* Páginas legales: texto largo, una columna cómoda de leer */
+.doc { max-width: 72ch; margin-inline: auto; padding: var(--s6) clamp(16px, 4vw, 32px) var(--s7); }
+.doc__back { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: var(--s4); color: var(--text-soft); }
+.doc h1 { margin-bottom: var(--s2); }
+.doc h2 { margin-top: var(--s6); font-size: 1.25rem; }
+.doc p, .doc li { color: var(--text-soft); line-height: 1.7; }
+.doc strong { color: var(--white); }
+.doc ul, .doc ol { padding-left: 1.3em; }
+.doc li { margin-bottom: var(--s2); }
+.doc .panel { margin-top: var(--s5); }
+
+.legal { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); margin: var(--s2) 0 0; }
+.legal a { display: inline-flex; align-items: center; min-height: 44px; color: var(--text-soft); }
+.legal a:hover { color: var(--white); }
