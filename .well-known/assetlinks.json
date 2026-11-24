@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.subnetpro.app",
+        "sha256_cert_fingerprints": ["7B:41:7B:C3:D7:67:98:22:07:55:D0:50:25:B0:21:78:7B:71:7F:63:B5:61:11:A2:C6:7A:78:4A:B7:D5:D1:82"]
+      }
+    }]
