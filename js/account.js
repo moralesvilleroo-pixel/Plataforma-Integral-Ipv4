@@ -257,7 +257,8 @@ function syncLine() {
 function legalLinks() {
   return h('p', { class: 'legal' },
     h('a', { href: 'privacidad.html', text: 'Política de privacidad' }),
-    h('a', { href: 'eliminar-cuenta.html', text: 'Cómo borrar tu cuenta' }));
+    h('a', { href: 'eliminar-cuenta.html', text: 'Cómo borrar tu cuenta' }),
+    h('a', { href: 'comentarios.html?desde=cuenta', text: 'Enviar comentarios' }));
 }
 
 function deviceSection(opts) {

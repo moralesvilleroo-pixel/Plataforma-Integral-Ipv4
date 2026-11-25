@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Enviar comentarios · SubnetPro</title>
+  <meta name="description" content="Reporta errores o propone ideas para SubnetPro.">
+  <meta name="theme-color" content="#1E3A8A">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/app.css">
+  <script type="module" src="/js/feedback.js"></script>
+</head>
+<body>
+  <main class="doc">
+    <a class="doc__back" href="/#inicio">‹ Volver a SubnetPro</a>
+    <h1>Enviar comentarios</h1>
+    <p>¿Encontraste un error, una pregunta mal planteada o tienes una idea? Escríbela aquí. No necesitas cuenta.</p>
+
+    <form id="fb-form" class="panel fb" novalidate>
+      <fieldset class="fb__group" id="fb-kind" tabindex="-1">
+        <legend>¿De qué se trata?</legend>
+        <div class="fb__choices">
+          <label class="fb__choice"><input type="radio" name="kind" value="error"> Un error</label>
+          <label class="fb__choice"><input type="radio" name="kind" value="idea"> Una idea</label>
+          <label class="fb__choice"><input type="radio" name="kind" value="otro"> Otra cosa</label>
+        </div>
+        <span class="err" id="fb-kind-err" hidden></span>
+      </fieldset>
+
+      <fieldset class="fb__group">
+        <legend>¿Qué tan útil te parece la app? <small>(opcional)</small></legend>
+        <div class="fb__choices">
+          <label class="fb__choice"><input type="radio" name="rating" value="1"> 1</label>
+          <label class="fb__choice"><input type="radio" name="rating" value="2"> 2</label>
+          <label class="fb__choice"><input type="radio" name="rating" value="3"> 3</label>
+          <label class="fb__choice"><input type="radio" name="rating" value="4"> 4</label>
+          <label class="fb__choice"><input type="radio" name="rating" value="5"> 5</label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="fb-msg">Tu comentario</label>
+        <textarea class="input input--text fb__text" id="fb-msg" maxlength="1500" rows="5" placeholder="Por ejemplo: en la unidad 6, la pregunta del pin 1 marca mal la respuesta."></textarea>
+        <small id="fb-count">0/1500</small>
+        <span class="err" id="fb-msg-err" hidden></span>
+      </div>
+
+      <div class="field">
+        <label for="fb-contact">Tu correo <small>(opcional, solo si quieres respuesta)</small></label>
+        <input class="input input--text" id="fb-contact" type="email" autocomplete="email" inputmode="email" maxlength="120">
+        <span class="err" id="fb-contact-err" hidden></span>
+      </div>
+
+      <div class="fb__trap" aria-hidden="true">
+        <label for="fb-web">No llenes este campo</label>
+        <input id="fb-web" type="text" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div id="fb-out" aria-live="polite"></div>
+      <button class="btn btn--primary" type="submit">Enviar comentario</button>
+    </form>
+
+    <p class="muted">Guardamos tu comentario, el tipo de dispositivo y, si lo escribes, tu correo. Más detalles en la <a href="/privacidad.html">política de privacidad</a>.</p>
+  </main>
+</body>
+</html>

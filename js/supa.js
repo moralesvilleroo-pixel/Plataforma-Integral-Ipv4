@@ -150,4 +150,15 @@ export const pushProgress = (data) => request('/rest/v1/progress?on_conflict=use
   body: { user_id: session?.user?.id, data, updated_at: new Date().toISOString() },
 });
 
+/** Envía un comentario. Funciona con o sin sesión: sin sesión entra como usuario anónimo de la base. */
+export async function sendFeedback(row) {
+  const signedIn = Boolean(await accessToken());
+  return request('/rest/v1/feedback', {
+    method: 'POST',
+    auth: signedIn,
+    headers: { Prefer: 'return=minimal' },
+    body: row,
+  });
+}
+
 export const callFunction = (name, body) => request(`/functions/v1/${name}`, { method: 'POST', body });
