@@ -5,6 +5,7 @@ import { renderPractice } from './practice.js';
 import { renderCalculator } from './calculator.js';
 import { renderAccount, renderNewPassword } from './account.js';
 import { renderChat } from './chat.js';
+import { renderBits } from './bits.js';
 import { configured, currentUser, onAuthChange, consumeAuthRedirect } from './supa.js';
 import { syncNow, schedulePush } from './sync.js';
 
@@ -295,10 +296,12 @@ function route() {
   handleAuthRedirect();
   const parts = (location.hash.replace(/^#\/?/, '') || 'inicio').split('/');
   const [name, id, sub] = parts;
-  const navKey = name === 'unidad' ? 'aprender' : name;
+  const navKey = name === 'unidad' ? 'aprender' : name === 'bits' ? 'practica' : name;
   updateAccountLink();
   for (const a of document.querySelectorAll('[data-nav]')) {
-    if (a.dataset.nav === navKey) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    const isDesktopRail = matchMedia('(min-width: 761px)').matches;
+    const key = name === 'bits' && isDesktopRail ? 'bits' : navKey;
+    if (a.dataset.nav === key) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
   currentKind = `${name}/${id ?? ''}/${sub ?? ''}`;
   const kind = currentKind;
@@ -312,6 +315,7 @@ function route() {
     case 'practica': renderPractice(app, state, save); app.setAttribute('aria-busy', 'false'); break;
     case 'calculadora': renderCalculator(app); app.setAttribute('aria-busy', 'false'); break;
     case 'asistente': renderChat(app); done(); break;
+    case 'bits': renderBits(app, state, save); app.setAttribute('aria-busy', 'false'); break;
     case 'cuenta':
       if (id === 'nueva-clave') renderNewPassword(app);
       else renderAccount(app, {
