@@ -83,7 +83,6 @@ p { margin: 0 0 var(--s3); }
 a { color: var(--text); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 code, .mono { font-family: var(--mono); font-size: 0.95em; font-variant-numeric: tabular-nums; }
 /* Cifras de ancho fijo: relojes y contadores no "vibran" al cambiar de dígito. */
-.drill__clock, .today__num, .unit__n, .stat b, .result__score, .nav__count, .rail__progress b, td, .kv dd, .step__ans, .explorer__ip, .bit__v, .strip__bit, .andbit, .exam__dot, .unitbar__pct, .eyebrow-num { font-variant-numeric: tabular-nums; }
 small { font-size: 0.85rem; }
 [hidden] { display: none !important; }
 
@@ -718,3 +717,6 @@ dialog::backdrop { background: rgba(11, 18, 32, 0.66); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Va al final: el atajo `font:` de las reglas anteriores reinicia font-variant-numeric. */
+.drill__clock, .today__num, .unit__n, .stat b, .result__score, .nav__count, .rail__progress b, td, .kv dd, .step__ans, .explorer__ip, .bit__v, .strip__bit, .andbit, .exam__dot, .unitbar__pct, .eyebrow-num { font-variant-numeric: tabular-nums; }
