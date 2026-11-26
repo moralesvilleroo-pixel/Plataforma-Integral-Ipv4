@@ -6,13 +6,14 @@ const PROVIDER = (Deno.env.get('AI_PROVIDER') ?? 'anthropic').toLowerCase();
 const ANTHROPIC_MODEL = Deno.env.get('ANTHROPIC_MODEL') ?? 'claude-haiku-5-5';
 const GEMINI_MODEL = Deno.env.get('GEMINI_MODEL') ?? 'gemini-3.8-flash';
 // Modelos de respaldo, separados por comas, por si el principal está saturado.
-// Razonamiento bajo: el recomendado para chat; responde varias veces más rápido que el nivel medio por defecto.
-const GEMINI_THINKING = Deno.env.get('GEMINI_THINKING') ?? 'low';
+// Nivel de razonamiento opcional (low, medium, high). Sin el secreto GEMINI_THINKING se usa el del modelo.
+const GEMINI_THINKING = Deno.env.get('GEMINI_THINKING') ?? 'off';
 const GEMINI_FALLBACKS = (Deno.env.get('GEMINI_FALLBACK_MODELS') ?? 'gemini-3.5-flash-lite,gemini-3.6-flash')
   .split(',').map((m) => m.trim()).filter(Boolean);
 const MAX_TURNS = 10;
 const MAX_CHARS = 800;
-const MAX_OUTPUT_TOKENS = 600;
+// En Gemini el razonamiento interno cuenta dentro de este tope: con 600 las respuestas salían cortadas.
+const MAX_OUTPUT_TOKENS = 2048;
 
 const ALLOWED = (Deno.env.get('ALLOWED_ORIGINS') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 
@@ -175,7 +176,11 @@ async function geminiOnce(model: string, messages: Msg[], key: string, thinking 
     throw new Error(detail);
   }
   const data = await res.json();
-  return (data.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? '').join('').trim();
+  const cand = data.candidates?.[0];
+  const text = (cand?.content?.parts ?? []).filter((p: { thought?: boolean }) => !p.thought).map((p: { text?: string }) => p.text ?? '').join('').trim();
+  console.log(JSON.stringify({ model, finish: cand?.finishReason, usage: data.usageMetadata }));
+  if (!text) throw new BusyError(`gemini_empty (${model}): ${cand?.finishReason ?? 'sin candidato'}`);
+  return text;
 }
 
 /** Prueba el modelo principal y, si está saturado, los de respaldo. */

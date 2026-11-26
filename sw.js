@@ -1,10 +1,10 @@
 // Service worker: guarda la app para abrirla sin internet. Sube CACHE cada vez que publiques cambios.
-const CACHE = 'subnetpro-v9';
+const CACHE = 'subnetpro-v10';
 const SHELL = [
   './', 'index.html', 'css/app.css', 'favicon.svg', 'manifest.webmanifest',
   'js/app.js', 'js/lib.js', 'js/quiz.js', 'js/practice.js', 'js/calculator.js',
   'js/account.js', 'js/chat.js', 'js/supa.js', 'js/sync.js', 'js/config.js', 'js/bits.js', 'js/drills.js', 'js/themes.js', 'js/theme-boot.js', 'js/feedback.js',
-  'js/core/ipv4.js', 'js/core/subnetting.js', 'data/unidades.json',
+  'js/core/ipv4.js', 'js/core/subnetting.js', 'data/unidades.json', 'data/teoria.json', 'js/theory.js',
   'icons/icon-192.png', 'icons/icon-512.png',
 ];
 

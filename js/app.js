@@ -7,6 +7,7 @@ import { renderAccount, renderNewPassword } from './account.js';
 import { renderChat } from './chat.js';
 import { renderBits } from './bits.js';
 import { renderDrill, renderExam, renderBlocked, examActive } from './drills.js';
+import { renderTheory } from './theory.js';
 import { configured, currentUser, onAuthChange, consumeAuthRedirect } from './supa.js';
 import { syncNow, schedulePush } from './sync.js';
 
@@ -50,9 +51,10 @@ function ensureData() {
   if (data) return Promise.resolve(data);
   if (!loading) {
     loadError = null;
+    const theory = fetch('data/teoria.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
     loading = fetch('data/unidades.json', { cache: 'no-cache' })
       .then((r) => { if (!r.ok) throw new Error(`El servidor respondió ${r.status}.`); return r.json(); })
-      .then((json) => { data = validate(json); updateDueBadge(); return data; })
+      .then(async (json) => { data = validate(json); data.teoria = (await theory)?.unidades ?? {}; updateDueBadge(); return data; })
       .catch((err) => { loadError = err; throw err; })
       .finally(() => { loading = null; });
   }
@@ -191,7 +193,7 @@ function viewLearn() {
   app.replaceChildren(h('div', { class: 'enter' },
     h('header', { class: 'view-head' },
       h('h1', { tabindex: '-1', text: 'Unidades del módulo' }),
-      h('p', { class: 'lead', text: `Lee los puntos clave y presenta la prueba de dominio: necesitas ${MASTERY} % para darla por dominada.` })),
+      h('p', { class: 'lead', text: `Lee la teoría, resuelve las actividades que trae y presenta la prueba de dominio: necesitas ${MASTERY} % para darla por dominada.` })),
     h('ol', { class: 'units' }, data.unidades.map((u, i) => h('li', {},
       h('a', { class: 'unit', href: `#unidad/${u.id}` },
         h('span', { class: 'unit__n', 'aria-hidden': 'true', text: String(i + 1).padStart(2, '0') }),
@@ -211,6 +213,18 @@ function viewUnit(id) {
   const st = state.units[u.id];
   const size = Math.min(QUIZ_SIZE, u.preguntas.length);
 
+  const meterFill = h('span', { class: 'bar__fill' });
+  const meterTxt = h('span', { class: 'th-prog__t' });
+  const meter = h('div', { class: 'th-prog' }, meterTxt, h('span', { class: 'bar', 'aria-hidden': 'true' }, meterFill));
+  const setMeter = (n, total) => {
+    meterTxt.replaceChildren(h('b', { text: `${n}/${total}` }), ' actividades de la teoría');
+    meterFill.style.width = `${total ? (n / total) * 100 : 0}%`;
+    meter.classList.toggle('is-done', total > 0 && n === total);
+  };
+  const theory = renderTheory(u.id, data.teoria?.[u.id], setMeter);
+  setMeter(theory.done(), theory.total);
+  const quizBtn = () => h('a', { class: 'btn btn--primary', href: `#unidad/${u.id}/prueba`, text: st?.attempts ? 'Repetir la prueba' : 'Presentar la prueba' });
+
   app.replaceChildren(h('div', { class: 'enter' },
     h('a', { class: 'back', href: '#aprender', text: '‹ Todas las unidades' }),
     h('header', { class: 'view-head' },
@@ -218,14 +232,18 @@ function viewUnit(id) {
       h('h1', { tabindex: '-1', text: u.titulo }),
       h('p', { class: 'lead', text: u.resumen })),
     h('div', { class: 'lesson' },
-      h('section', { class: 'panel', 'aria-labelledby': 'pk-h' },
-        h('h2', { id: 'pk-h', text: 'Puntos clave' }),
-        h('ol', { class: 'points' }, u.puntos.map((p) => h('li', { text: p })))),
+      h('div', { class: 'th' },
+        theory.total ? meter : null,
+        theory.nodes,
+        h('section', { class: 'panel th-sum', 'aria-labelledby': 'pk-h' },
+          h('h2', { id: 'pk-h', text: 'Resumen para repasar' }),
+          h('ol', { class: 'points' }, u.puntos.map((p) => h('li', { text: p }))),
+          h('div', { class: 'row' }, quizBtn()))),
       h('aside', { class: 'panel aside-actions', 'aria-labelledby': 'pd-h' },
         h('h2', { id: 'pd-h', text: 'Prueba de dominio' }),
         h('p', { text: `${size} preguntas al azar de ${u.preguntas.length}. Necesitas ${MASTERY} % o más.` }),
         h('p', {}, 'Estado: ', unitStatus(u)),
-        h('a', { class: 'btn btn--primary', href: `#unidad/${u.id}/prueba`, text: st?.attempts ? 'Repetir la prueba' : 'Presentar la prueba' })))));
+        quizBtn()))));
 }
 
 function viewUnitQuiz(id) {

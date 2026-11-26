@@ -1,0 +1,1799 @@
+{
+ "version": 1,
+ "unidades": {
+  "u1": {
+   "secciones": [
+    {
+     "titulo": "Qué es una red de computadoras",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Una **red de computadoras** es un conjunto de equipos y programas conectados entre sí para compartir información, recursos y servicios. Se conectan por cables, por ondas de radio o por luz, pero la idea es siempre la misma: que un equipo pueda enviar datos a otro."
+      },
+      {
+       "t": "p",
+       "x": "Como en toda comunicación, hay cuatro elementos: un **emisor** que envía, un **mensaje**, un **medio** por donde viaja y un **receptor** que lo recibe. Además, los dos extremos deben hablar el mismo \"idioma\": eso es un **protocolo**."
+      },
+      {
+       "t": "revela",
+       "id": "u1-wa",
+       "q": "Cuando le mandas un audio a alguien por WhatsApp desde el celular, ¿quién es el emisor, cuál es el mensaje, cuál el medio y quién el receptor?",
+       "a": "Emisor: tu celular. Mensaje: el audio convertido en datos. Medio: el Wi-Fi o los datos móviles, y después cables y fibra de Internet. Receptor: el celular de la otra persona. El protocolo es el conjunto de reglas con que la app y la red se entienden."
+      },
+      {
+       "t": "p",
+       "x": "¿Para qué se arma una red? Para **compartir recursos** (una impresora, una conexión a Internet, archivos), para que la información esté **disponible y sea confiable**, para comunicarse rápido y para **ahorrar costos**: una impresora en red sirve a toda la oficina."
+      },
+      {
+       "t": "nota",
+       "x": "Internet es la red más grande que existe: millones de redes interconectadas que comparten información usando la familia de protocolos TCP/IP.",
+       "titulo": "Ejemplo grande"
+      }
+     ]
+    },
+    {
+     "titulo": "Capa física y capa lógica",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "La comunicación ocurre en dos planos. La **capa física** son las cosas que puedes tocar: tarjetas de red, cables, conectores, antenas. La **capa lógica** son las reglas o **protocolos** que le dan sentido a esas señales."
+      },
+      {
+       "t": "p",
+       "x": "Separarlas tiene una ventaja enorme: puedes cambiar el cable por Wi-Fi sin cambiar el programa de correo, o actualizar un protocolo sin cambiar el cableado. Por eso las redes crecen y se modernizan por partes."
+      },
+      {
+       "t": "pregunta",
+       "id": "u1-q1",
+       "q": "Un protocolo de red es…",
+       "o": [
+        {
+         "x": "Un conjunto de reglas para que los equipos se entiendan",
+         "ok": true,
+         "fb": "Exacto. Es como un idioma común: si los dos equipos lo hablan, se pueden comunicar."
+        },
+        {
+         "x": "El cable que une dos computadores",
+         "ok": false,
+         "fb": "El cable es parte de la capa física. El protocolo son las reglas de la comunicación."
+        },
+        {
+         "x": "Un programa antivirus",
+         "ok": false,
+         "fb": "Un antivirus protege el equipo, pero no define cómo se comunican."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "titulo": "Componentes de una red",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Toda red necesita tres cosas: **hardware**, **software** y **protocolos**. El hardware se divide en dos grupos:"
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**Dispositivos finales (hosts):** donde el usuario trabaja o recibe un servicio. Computadores, portátiles, celulares, impresoras, servidores, televisores inteligentes, cámaras IP.",
+        "**Dispositivos de red:** los que conectan a los finales entre sí. Switch, router, punto de acceso inalámbrico, módem, puente (bridge)."
+       ]
+      },
+      {
+       "t": "clasificar",
+       "id": "u1-c1",
+       "q": "¿Cada equipo es un dispositivo final o un dispositivo de red?",
+       "cats": [
+        "Final",
+        "De red"
+       ],
+       "items": [
+        {
+         "x": "Impresora",
+         "c": 0
+        },
+        {
+         "x": "Switch",
+         "c": 1
+        },
+        {
+         "x": "Celular",
+         "c": 0
+        },
+        {
+         "x": "Router",
+         "c": 1
+        },
+        {
+         "x": "Punto de acceso Wi-Fi",
+         "c": 1
+        },
+        {
+         "x": "Servidor",
+         "c": 0
+        }
+       ],
+       "fb": "Bien. El servidor es un dispositivo final aunque preste servicios: la conexión la hacen el switch, el router y el punto de acceso."
+      },
+      {
+       "t": "p",
+       "x": "En el software están el **sistema operativo de red** (en Windows y Linux ya viene incluido) y el **software de aplicación**: navegador, correo, programas de contabilidad, etc."
+      }
+     ]
+    },
+    {
+     "titulo": "La tarjeta de red y la dirección MAC",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "La **tarjeta de red** o **NIC** es la pieza que conecta el equipo al medio. Convierte los datos del computador en señales (eléctricas, de luz o de radio) y las señales que llegan, otra vez en datos. Hoy casi siempre viene integrada en la placa base."
+      },
+      {
+       "t": "p",
+       "x": "Cada tarjeta trae de fábrica un identificador único, la **dirección MAC**: 48 bits, es decir 6 bytes, escritos en hexadecimal, por ejemplo `3C:52:82:1A:9F:04`. Los primeros 3 bytes identifican al fabricante."
+      },
+      {
+       "t": "escribir",
+       "id": "u1-w1",
+       "q": "¿Cuántos bytes tiene una dirección MAC?",
+       "ok": [
+        "6",
+        "seis",
+        "6 bytes"
+       ],
+       "fb": "48 bits divididos en grupos de 8 dan 6 bytes, y por eso la MAC se escribe en 6 pares hexadecimales.",
+       "pista": "Tiene 48 bits. ¿Cuántos grupos de 8 bits caben?",
+       "num": true
+      },
+      {
+       "t": "nota",
+       "x": "Las velocidades típicas de una tarjeta Ethernet son 100 Mbps, 1 Gbps y 10 Gbps. Las inalámbricas dependen del estándar Wi-Fi que soporten.",
+       "titulo": "En la práctica"
+      }
+     ]
+    },
+    {
+     "titulo": "Los servidores",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Un **servidor** es el equipo que pone un servicio a disposición de los demás (los **clientes**). Puede ser un computador potente o un programa corriendo en la nube."
+      },
+      {
+       "t": "explorar",
+       "id": "u1-e1",
+       "q": "Toca cada tipo de servidor para ver qué hace.",
+       "items": [
+        {
+         "x": "Archivos",
+         "s": "FTP, SMB",
+         "d": "Guarda archivos y los comparte con los clientes de la red."
+        },
+        {
+         "x": "Impresión",
+         "s": "Cola",
+         "d": "Controla una o varias impresoras y organiza en cola los trabajos que le envían."
+        },
+        {
+         "x": "Correo",
+         "s": "SMTP",
+         "d": "Almacena, envía y recibe los correos electrónicos de los usuarios."
+        },
+        {
+         "x": "Web",
+         "s": "HTTP",
+         "d": "Guarda páginas, imágenes y otros contenidos y los entrega al navegador que los pide."
+        },
+        {
+         "x": "Proxy",
+         "s": "Filtro",
+         "d": "Hace peticiones a Internet en nombre de los clientes; puede filtrar sitios y guardar en caché lo más visitado."
+        },
+        {
+         "x": "DHCP",
+         "s": "Direcciones",
+         "d": "Asigna automáticamente la dirección IP, la máscara y la puerta de enlace a cada equipo que se conecta."
+        },
+        {
+         "x": "DNS",
+         "s": "Nombres",
+         "d": "Traduce nombres como `www.google.com` a direcciones IP que entienden los equipos."
+        },
+        {
+         "x": "Base de datos",
+         "s": "SQL",
+         "d": "Guarda información ordenada para que las aplicaciones la consulten."
+        }
+       ]
+      },
+      {
+       "t": "pregunta",
+       "id": "u1-q2",
+       "q": "Conectas un portátil al Wi-Fi del colegio y recibe su dirección IP solo. ¿Qué servicio lo hizo?",
+       "o": [
+        {
+         "x": "DHCP",
+         "ok": true,
+         "fb": "Correcto: el servidor DHCP le asignó IP, máscara y puerta de enlace."
+        },
+        {
+         "x": "DNS",
+         "ok": false,
+         "fb": "DNS traduce nombres a IP, pero no reparte direcciones."
+        },
+        {
+         "x": "Proxy",
+         "ok": false,
+         "fb": "El proxy intermedia el acceso a Internet; no asigna direcciones."
+        }
+       ]
+      },
+      {
+       "t": "p",
+       "x": "En redes medianas y grandes, los datos no se guardan en cada servidor sino en sistemas de almacenamiento dedicados: **NAS** (almacenamiento conectado a la red) o **SAN** (una red solo para almacenamiento)."
+      }
+     ]
+    }
+   ]
+  },
+  "u2": {
+   "secciones": [
+    {
+     "titulo": "Por qué la red se divide en capas",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Comunicar dos equipos implica muchos trabajos distintos: convertir bits en señales, encontrar el camino, revisar que nada se pierda, mostrar la página. Para que cada fabricante no reinvente todo, el trabajo se reparte en **capas**: cada una hace una tarea y le presta servicio a la de arriba."
+      },
+      {
+       "t": "p",
+       "x": "Así, quien fabrica una tarjeta de red solo cumple las reglas de las capas de abajo, y quien programa un navegador, las de arriba. Y todo funciona junto."
+      },
+      {
+       "t": "nota",
+       "x": "Piensa en enviar una carta: tú escribes (aplicación), la metes en un sobre con dirección (red), la empresa de mensajería decide la ruta y el camión la lleva (enlace y física). Nadie necesita saber cómo trabaja el otro.",
+       "titulo": "Una comparación"
+      }
+     ]
+    },
+    {
+     "titulo": "El modelo OSI: 7 capas",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "El modelo **OSI** (Open Systems Interconnection) lo creó la **ISO** como referencia para cualquier red. Divide la comunicación en siete capas, de abajo hacia arriba:"
+      },
+      {
+       "t": "tabla",
+       "cab": [
+        "Capa",
+        "Qué hace",
+        "Unidad de datos"
+       ],
+       "filas": [
+        [
+         "7 Aplicación",
+         "Servicios que usa el programa: web, correo, archivos",
+         "Datos"
+        ],
+        [
+         "6 Presentación",
+         "Formato, cifrado y compresión",
+         "Datos"
+        ],
+        [
+         "5 Sesión",
+         "Abre, mantiene y cierra el diálogo",
+         "Datos"
+        ],
+        [
+         "4 Transporte",
+         "Divide los datos, controla errores y flujo",
+         "Segmento"
+        ],
+        [
+         "3 Red",
+         "Direcciones IP y ruta entre redes",
+         "Paquete"
+        ],
+        [
+         "2 Enlace de datos",
+         "Direcciones MAC y entrega dentro de la red local",
+         "Trama"
+        ],
+        [
+         "1 Física",
+         "Señales eléctricas, luz u ondas",
+         "Bit"
+        ]
+       ]
+      },
+      {
+       "t": "ordenar",
+       "id": "u2-o1",
+       "q": "Ordena las capas OSI de la 7 (arriba) a la 1 (abajo).",
+       "items": [
+        "Aplicación",
+        "Presentación",
+        "Sesión",
+        "Transporte",
+        "Red",
+        "Enlace de datos",
+        "Física"
+       ],
+       "fb": "Una forma de recordarlas de abajo hacia arriba: \"Fíjate En Robar Todo Su Pan Ahora\" (Física, Enlace, Red, Transporte, Sesión, Presentación, Aplicación).",
+       "pista": "Empieza por la que está más cerca del usuario."
+      },
+      {
+       "t": "pregunta",
+       "id": "u2-q1",
+       "q": "¿En qué capa trabaja la dirección IP?",
+       "o": [
+        {
+         "x": "Capa 3, Red",
+         "ok": true,
+         "fb": "Sí. Red se encarga de las direcciones lógicas (IP) y de encontrar la ruta entre redes."
+        },
+        {
+         "x": "Capa 2, Enlace",
+         "ok": false,
+         "fb": "En Enlace se usan las direcciones MAC, no las IP."
+        },
+        {
+         "x": "Capa 4, Transporte",
+         "ok": false,
+         "fb": "Transporte usa puertos (como el 80 o el 443), no direcciones IP."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "titulo": "Encapsulamiento: cómo baja y sube un mensaje",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Cuando envías algo, el mensaje **baja** por las capas del emisor. Cada capa le pega su propio **encabezado** con la información que necesita, como meter una carta en sobres cada vez más grandes. Eso es **encapsular**."
+      },
+      {
+       "t": "p",
+       "x": "En el receptor el mensaje **sube**: cada capa lee y quita el encabezado que puso su capa gemela del otro lado. Eso es **desencapsular**."
+      },
+      {
+       "t": "widget",
+       "id": "u2-g1",
+       "w": "encapsulado"
+      },
+      {
+       "t": "revela",
+       "id": "u2-r1",
+       "q": "Un switch solo mira hasta la capa 2. ¿Qué parte del mensaje puede leer para decidir por dónde enviarlo?",
+       "a": "El encabezado Ethernet de la trama, que trae las direcciones MAC de origen y destino. No necesita abrir el paquete IP ni los datos."
+      }
+     ]
+    },
+    {
+     "titulo": "El modelo TCP/IP: el que usa Internet",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "OSI es la referencia para estudiar; el que realmente funciona en Internet y en las redes locales es **TCP/IP**, que nació en ARPANET. Su nombre viene de sus dos protocolos principales: **TCP** (transporte) e **IP** (red). Agrupa todo en 4 capas:"
+      },
+      {
+       "t": "tabla",
+       "cab": [
+        "TCP/IP",
+        "Equivale en OSI a",
+        "Protocolos de ejemplo"
+       ],
+       "filas": [
+        [
+         "Aplicación",
+         "7, 6 y 5",
+         "HTTP, HTTPS, DNS, DHCP, correo (SMTP)"
+        ],
+        [
+         "Transporte",
+         "4",
+         "TCP, UDP"
+        ],
+        [
+         "Internet",
+         "3",
+         "IP, ICMP (el que usa ping)"
+        ],
+        [
+         "Acceso a la red",
+         "2 y 1",
+         "Ethernet, Wi-Fi"
+        ]
+       ]
+      },
+      {
+       "t": "nota",
+       "x": "El módulo pone \"Paquete\" como unidad de la capa de Transporte en TCP/IP. Lo usual es llamarla **segmento** (con TCP) o datagrama (con UDP), y reservar **paquete** para la capa de Red.",
+       "titulo": "Ojo con el módulo",
+       "tipo": "ojo"
+      },
+      {
+       "t": "p",
+       "x": "**TCP** confirma que cada segmento llegó y reenvía lo perdido: se usa para páginas web, correo y archivos. **UDP** no confirma nada, por eso es más rápido: se usa en llamadas, videojuegos y transmisiones en vivo, donde es mejor perder un pedacito que esperar."
+      },
+      {
+       "t": "clasificar",
+       "id": "u2-c1",
+       "q": "¿En qué capa de TCP/IP trabaja cada protocolo?",
+       "cats": [
+        "Aplicación",
+        "Transporte",
+        "Internet",
+        "Acceso"
+       ],
+       "items": [
+        {
+         "x": "HTTP",
+         "c": 0
+        },
+        {
+         "x": "UDP",
+         "c": 1
+        },
+        {
+         "x": "IP",
+         "c": 2
+        },
+        {
+         "x": "Wi-Fi (802.11)",
+         "c": 3
+        },
+        {
+         "x": "DNS",
+         "c": 0
+        },
+        {
+         "x": "TCP",
+         "c": 1
+        },
+        {
+         "x": "Ethernet",
+         "c": 3
+        },
+        {
+         "x": "ICMP",
+         "c": 2
+        }
+       ],
+       "fb": "Muy bien. DNS va en Aplicación aunque lo use el sistema operativo, e ICMP (el de ping) acompaña a IP en la capa Internet."
+      },
+      {
+       "t": "pregunta",
+       "id": "u2-q2",
+       "q": "Una videollamada prefiere UDP en lugar de TCP porque…",
+       "o": [
+        {
+         "x": "Es mejor perder un poquito de imagen que esperar a que se reenvíe",
+         "ok": true,
+         "fb": "Así es. En tiempo real, esperar los reenvíos de TCP congelaría la llamada."
+        },
+        {
+         "x": "UDP es más seguro",
+         "ok": false,
+         "fb": "UDP no agrega seguridad; solo es más liviano porque no confirma la entrega."
+        },
+        {
+         "x": "TCP no funciona con video",
+         "ok": false,
+         "fb": "TCP sí transporta video (por ejemplo, al ver un video grabado). El tema es la demora."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "titulo": "Otros estándares que vas a ver",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Además de los modelos, hay normas que definen tecnologías concretas. Las publica sobre todo el **IEEE**:"
+      },
+      {
+       "t": "tabla",
+       "cab": [
+        "Tecnología",
+        "Norma"
+       ],
+       "filas": [
+        [
+         "Ethernet (cable)",
+         "IEEE 802.3"
+        ],
+        [
+         "Wi-Fi (WLAN)",
+         "IEEE 802.11"
+        ],
+        [
+         "Bluetooth",
+         "IEEE 802.15"
+        ],
+        [
+         "PPP (enlaces punto a punto)",
+         "RFC 1661"
+        ]
+       ]
+      },
+      {
+       "t": "escribir",
+       "id": "u2-w1",
+       "q": "¿Qué número de norma IEEE corresponde a Wi-Fi? Escribe solo el número.",
+       "ok": [
+        "802.11",
+        "80211"
+       ],
+       "fb": "802.11 es la familia de Wi-Fi; sus versiones se nombran con letras: 802.11n, 802.11ac, 802.11ax (Wi-Fi 6).",
+       "pista": "Es la familia 802 y termina en 11."
+      }
+     ]
+    }
+   ]
+  },
+  "u3": {
+   "secciones": [
+    {
+     "titulo": "Redes según su alcance",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "La forma más común de clasificar una red es por el **área que cubre**:"
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**PAN** (red de área personal): unos pocos metros alrededor de una persona. Audífonos Bluetooth con el celular. Si es inalámbrica se le dice WPAN.",
+        "**LAN** (red de área local): una casa, un salón, un edificio. No usa redes públicas. Si es inalámbrica, **WLAN**.",
+        "**CAN** (red de campus): varias LAN de un colegio, universidad, hospital o base militar.",
+        "**MAN** (red metropolitana): una ciudad. Por ejemplo, los edificios públicos de un municipio unidos con fibra.",
+        "**WAN** (red de área amplia): países y continentes, usando satélites, cables submarinos y redes de proveedores. Internet es la WAN más grande."
+       ]
+      },
+      {
+       "t": "ordenar",
+       "id": "u3-o1",
+       "q": "Ordena de menor a mayor alcance.",
+       "items": [
+        "PAN",
+        "LAN",
+        "CAN",
+        "MAN",
+        "WAN"
+       ],
+       "fb": "Personal, local, campus, metropolitana y amplia.",
+       "pista": "La más pequeña es la de tus audífonos."
+      },
+      {
+       "t": "clasificar",
+       "id": "u3-c1",
+       "q": "¿Qué tipo de red es cada caso?",
+       "cats": [
+        "PAN",
+        "LAN",
+        "MAN",
+        "WAN"
+       ],
+       "items": [
+        {
+         "x": "Un reloj inteligente conectado al celular",
+         "c": 0
+        },
+        {
+         "x": "Los computadores de la sala de sistemas",
+         "c": 1
+        },
+        {
+         "x": "Las sedes de un banco en Cartagena, Bogotá y Medellín",
+         "c": 3
+        },
+        {
+         "x": "Las cámaras de tránsito de toda una ciudad unidas por fibra",
+         "c": 2
+        }
+       ],
+       "fb": "Exacto. Lo que define el tipo es el área que cubre, no la cantidad de equipos."
+      },
+      {
+       "t": "p",
+       "x": "Hay dos más que conviene conocer: la **SAN**, una red dedicada solo a conectar servidores con almacenamiento, y la **VLAN**, una red local virtual que divide un switch en varias redes separadas por software."
+      }
+     ]
+    },
+    {
+     "titulo": "Otras formas de clasificarlas",
+     "bloques": [
+      {
+       "t": "lista",
+       "items": [
+        "**Por relación funcional:** *cliente-servidor* (un equipo pide y otro responde, como al abrir una página web) o *entre iguales* o P2P (todos comparten sin un servidor fijo).",
+        "**Por tecnología:** *punto a punto* (muchas conexiones entre parejas de equipos, típicamente con switch) o *broadcast* (un solo canal compartido donde todos reciben todo, como con un hub).",
+        "**Por acceso:** *privada* (solo usuarios autorizados, con clave) o *pública* (para cualquier persona).",
+        "**Por difusión:** *intranet* (red privada de una organización que usa tecnología de Internet) e *Internet*."
+       ]
+      },
+      {
+       "t": "pregunta",
+       "id": "u3-q1",
+       "q": "Cuando abres Instagram, tu celular le pide las fotos a los equipos de Instagram y estos responden. ¿Qué modelo es?",
+       "o": [
+        {
+         "x": "Cliente-servidor",
+         "ok": true,
+         "fb": "Así es: tu celular es el cliente y los equipos de Instagram son los servidores."
+        },
+        {
+         "x": "Entre iguales (P2P)",
+         "ok": false,
+         "fb": "En P2P todos son iguales y comparten entre sí; aquí hay un lado que pide y otro que sirve."
+        },
+        {
+         "x": "Broadcast",
+         "ok": false,
+         "fb": "Broadcast es un tipo de transmisión a todos, no una relación entre equipos."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "titulo": "Topologías: la forma de la red",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "La **topología** es el dibujo de cómo se conectan los nodos. No depende de la distancia ni de la velocidad, solo de **quién se conecta con quién**. Las principales:"
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**Bus:** todos cuelgan de un solo cable troncal. Barata, pero un corte en el troncal la afecta toda.",
+        "**Estrella:** todos llegan a un punto central (hoy un switch). Es la que se usa en las redes locales actuales.",
+        "**Anillo:** cada equipo se conecta al siguiente y el último al primero.",
+        "**Malla:** cada nodo se conecta con todos. Muy confiable y muy costosa en cable.",
+        "**Árbol o jerárquica:** estrellas conectadas en niveles, como las ramas de un árbol.",
+        "**Mixta o híbrida:** una combinación de las anteriores. Es lo que encuentras en una empresa real."
+       ]
+      },
+      {
+       "t": "widget",
+       "id": "u3-g1",
+       "w": "topologia"
+      },
+      {
+       "t": "pregunta",
+       "id": "u3-q2",
+       "q": "En una red en estrella se daña el switch central. ¿Qué pasa?",
+       "o": [
+        {
+         "x": "Ningún equipo se puede comunicar con otro",
+         "ok": true,
+         "fb": "Correcto: el nodo central es el punto único de falla de la estrella."
+        },
+        {
+         "x": "Solo falla el equipo más cercano",
+         "ok": false,
+         "fb": "En estrella todo pasa por el centro; si cae el centro, caen todos."
+        },
+        {
+         "x": "Los equipos siguen hablando entre ellos por el cable",
+         "ok": false,
+         "fb": "En estrella no hay cables entre los equipos: todo pasa por el switch."
+        }
+       ]
+      },
+      {
+       "t": "revela",
+       "id": "u3-r1",
+       "q": "Si la malla es la más confiable, ¿por qué casi nadie arma una LAN en malla completa?",
+       "a": "Porque el número de cables crece muy rápido: con n equipos se necesitan n(n−1)/2 enlaces. Con 10 equipos son 45 cables, y cada equipo necesitaría 9 puertos. Se usa malla solo entre routers o switches principales, donde la redundancia vale la pena."
+      }
+     ]
+    },
+    {
+     "titulo": "Direccionalidad: quién puede hablar y cuándo",
+     "bloques": [
+      {
+       "t": "lista",
+       "items": [
+        "**Simplex:** los datos van en un solo sentido, siempre. Por ejemplo, la señal de televisión.",
+        "**Half-duplex (semidúplex):** los dos pueden transmitir, pero no al mismo tiempo. Por ejemplo, un walkie-talkie.",
+        "**Full-duplex (dúplex):** los dos transmiten y reciben a la vez. Por ejemplo, una llamada telefónica o un switch moderno."
+       ]
+      },
+      {
+       "t": "clasificar",
+       "id": "u3-c2",
+       "q": "¿Qué modo de transmisión usa cada caso?",
+       "cats": [
+        "Simplex",
+        "Half-duplex",
+        "Full-duplex"
+       ],
+       "items": [
+        {
+         "x": "Radio FM",
+         "c": 0
+        },
+        {
+         "x": "Walkie-talkie",
+         "c": 1
+        },
+        {
+         "x": "Videollamada",
+         "c": 2
+        },
+        {
+         "x": "Un hub antiguo con varios equipos",
+         "c": 1
+        },
+        {
+         "x": "Puerto de un switch moderno",
+         "c": 2
+        }
+       ],
+       "fb": "Bien. El hub obliga a turnarse (half-duplex) y por eso hay colisiones; el switch permite full-duplex en cada puerto."
+      }
+     ]
+    }
+   ]
+  },
+  "u4": {
+   "secciones": [
+    {
+     "titulo": "Medios guiados y no guiados",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "El **medio de transmisión** es el camino físico por donde viaja la señal. Hay dos grandes grupos:"
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**Guiados:** la señal va dentro de un cable que la conduce de un extremo al otro: par trenzado, coaxial y fibra óptica.",
+        "**No guiados:** la señal viaja por el aire mediante antenas: radio, microondas e infrarrojo."
+       ]
+      },
+      {
+       "t": "p",
+       "x": "Para elegir un medio se comparan: la velocidad máxima, la distancia que alcanza sin repetidor, qué tanto le afecta la interferencia, qué tan fácil es instalarlo y cuánto cuesta."
+      },
+      {
+       "t": "clasificar",
+       "id": "u4-c1",
+       "q": "¿Medio guiado o no guiado?",
+       "cats": [
+        "Guiado",
+        "No guiado"
+       ],
+       "items": [
+        {
+         "x": "Fibra óptica",
+         "c": 0
+        },
+        {
+         "x": "Wi-Fi",
+         "c": 1
+        },
+        {
+         "x": "Cable UTP",
+         "c": 0
+        },
+        {
+         "x": "Enlace de microondas entre dos edificios",
+         "c": 1
+        },
+        {
+         "x": "Cable coaxial de la TV",
+         "c": 0
+        },
+        {
+         "x": "Bluetooth",
+         "c": 1
+        }
+       ],
+       "fb": "Correcto: si hay un cable que conduce la señal, es guiado."
+      }
+     ]
+    },
+    {
+     "titulo": "Par trenzado: UTP y STP",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Es el cable de red más usado. Tiene **4 pares de hilos de cobre** y cada par va trenzado. El trenzado no es decoración: hace que el ruido que entra a un hilo se cancele con el del otro y reduce la **diafonía**, que es la interferencia entre pares vecinos. Por eso, al ponchar, no se debe destrenzar más de lo necesario."
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**UTP:** sin blindaje. Barato, flexible y fácil de instalar. Es el de casi todas las LAN.",
+        "**STP / FTP:** con blindaje metálico. Se usa cerca de motores, ascensores o maquinaria, donde hay mucha interferencia. El blindaje debe conectarse a tierra."
+       ]
+      },
+      {
+       "t": "tabla",
+       "cab": [
+        "Categoría",
+        "Uso típico hoy"
+       ],
+       "filas": [
+        [
+         "Cat 5e",
+         "Hasta 1 Gbps a 100 m"
+        ],
+        [
+         "Cat 6",
+         "1 Gbps a 100 m y 10 Gbps en tramos cortos (hasta 55 m)"
+        ],
+        [
+         "Cat 6A",
+         "10 Gbps a 100 m"
+        ],
+        [
+         "Cat 8",
+         "25 a 40 Gbps, solo en centros de datos (hasta 30 m)"
+        ]
+       ]
+      },
+      {
+       "t": "nota",
+       "x": "El módulo dice que la Cat 5 llega a 100 Mbps y la Cat 6 a 1 Gbps. Hoy la Cat 5 ya no se instala; lo mínimo es Cat 5e, y para instalaciones nuevas se recomienda Cat 6 o 6A.",
+       "titulo": "Actualización",
+       "tipo": "ojo"
+      },
+      {
+       "t": "pregunta",
+       "id": "u4-q1",
+       "q": "Vas a cablear un taller con varios motores eléctricos grandes. ¿Qué cable conviene?",
+       "o": [
+        {
+         "x": "Par trenzado blindado (STP/FTP) bien aterrizado, o fibra",
+         "ok": true,
+         "fb": "Así es. El blindaje protege del ruido de los motores; la fibra es inmune porque transmite luz."
+        },
+        {
+         "x": "UTP, porque es más barato",
+         "ok": false,
+         "fb": "El UTP funcionaría mal: los motores inducen ruido y habría errores."
+        },
+        {
+         "x": "Cable telefónico",
+         "ok": false,
+         "fb": "No sirve para datos a velocidades de red."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "titulo": "Coaxial y fibra óptica",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "El **coaxial** tiene un hilo central (el \"vivo\"), un aislante llamado dieléctrico, una malla metálica que sirve de blindaje y una cubierta. Hoy se usa sobre todo en TV por cable y en algunas conexiones de Internet de cableoperadores."
+      },
+      {
+       "t": "p",
+       "x": "La **fibra óptica** es un hilo finísimo de vidrio o plástico por el que viajan **pulsos de luz**. No le afecta la interferencia electromagnética, alcanza kilómetros y soporta velocidades altísimas."
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**Multimodo:** núcleo más grueso (50 o 62,5 µm), la luz rebota por varios caminos. Para distancias cortas: dentro de un edificio o un campus.",
+        "**Monomodo:** núcleo muy delgado (unos 9 µm), un solo camino de luz con láser. Para kilómetros: enlaces entre ciudades y la red de los proveedores."
+       ]
+      },
+      {
+       "t": "escribir",
+       "id": "u4-w1",
+       "q": "Debes unir dos edificios a 3 km de distancia por cable. ¿Qué tipo de fibra usarías?",
+       "ok": [
+        "monomodo",
+        "fibra monomodo",
+        "single mode",
+        "singlemode"
+       ],
+       "fb": "Monomodo: es la que alcanza kilómetros. La multimodo se queda en cientos de metros.",
+       "pista": "Para kilómetros se usa la que tiene un solo camino de luz."
+      }
+     ]
+    },
+    {
+     "titulo": "Atenuación: por qué la distancia importa",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Toda señal pierde fuerza mientras viaja: eso es la **atenuación**. Si llega muy débil, se confunde con el **ruido** de fondo y el receptor ya no distingue los ceros de los unos. Aparecen errores y retransmisiones, y la red se vuelve lenta."
+      },
+      {
+       "t": "widget",
+       "id": "u4-g1",
+       "w": "atenuacion"
+      },
+      {
+       "t": "p",
+       "x": "Otras cosas que deforman la señal en un cable de cobre: la **capacitancia** (crece si el cable es muy largo o está estirado o aplastado), la **impedancia**, que en el par trenzado de red debe ser de **100 ohmios**, y el **ruido** externo: lámparas fluorescentes, motores, hornos microondas y otros equipos eléctricos."
+      },
+      {
+       "t": "revela",
+       "id": "u4-r1",
+       "q": "Un cable UTP pasa pegado a las lámparas fluorescentes del techo y la red de esa oficina se cae a ratos. ¿Qué harías?",
+       "a": "Re-enrutar el cable para alejarlo de la fuente de ruido (usar bandeja o canaleta separada de la eléctrica) o, si no es posible, cambiar ese tramo por cable blindado aterrizado. El problema no es el switch: es el ruido que se suma a la señal."
+      }
+     ]
+    },
+    {
+     "titulo": "Medios no guiados",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "En los medios inalámbricos la antena del transmisor irradia la señal y la del receptor la capta. Hay dos configuraciones: **direccional**, en la que la energía va en un haz y las antenas deben estar alineadas, como un enlace entre edificios; y **omnidireccional**, en la que se emite hacia todos lados, como el router Wi-Fi de tu casa."
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**Radio:** ondas que atraviesan paredes. Aquí están el Wi-Fi (2,4, 5 y 6 GHz) y el Bluetooth.",
+        "**Microondas:** enlaces punto a punto de larga distancia con antenas alineadas, y también los satélites.",
+        "**Infrarrojo:** corto alcance y necesita línea de vista, como el control remoto del televisor."
+       ]
+      },
+      {
+       "t": "pregunta",
+       "id": "u4-q2",
+       "q": "¿Por qué el Wi-Fi de 2,4 GHz llega más lejos que el de 5 GHz, aunque sea más lento?",
+       "o": [
+        {
+         "x": "Las frecuencias más bajas atraviesan mejor paredes y obstáculos",
+         "ok": true,
+         "fb": "Correcto. A mayor frecuencia, más velocidad posible pero menos alcance y más pérdida con los obstáculos."
+        },
+        {
+         "x": "Porque 2,4 GHz usa más potencia siempre",
+         "ok": false,
+         "fb": "La potencia está limitada por la regulación en las dos bandas; la diferencia está en cómo se propaga cada frecuencia."
+        },
+        {
+         "x": "Porque 5 GHz es solo para exteriores",
+         "ok": false,
+         "fb": "5 GHz se usa muchísimo en interiores."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "u5": {
+   "secciones": [
+    {
+     "titulo": "Quién es quién en los dispositivos de red",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Para armar una red se eligen los equipos según lo que se necesita. Ejemplo: para unir los computadores de una oficina se usa un **switch**; para los portátiles con Wi-Fi, un **punto de acceso** conectado a ese switch; y para salir a Internet, un **router**."
+      },
+      {
+       "t": "explorar",
+       "id": "u5-e1",
+       "q": "Toca cada dispositivo.",
+       "items": [
+        {
+         "x": "Hub",
+         "s": "Capa 1",
+         "d": "Repite todo lo que le llega por todos sus puertos. Todos comparten el mismo canal y se turnan (half-duplex), así que hay colisiones. Ya es obsoleto."
+        },
+        {
+         "x": "Switch",
+         "s": "Capa 2",
+         "d": "Aprende las direcciones MAC de los equipos y envía cada trama solo al puerto del destino. Es el centro de la estrella en una LAN."
+        },
+        {
+         "x": "Router",
+         "s": "Capa 3",
+         "d": "Une redes distintas y decide la mejor ruta para cada paquete usando las direcciones IP y su tabla de enrutamiento."
+        },
+        {
+         "x": "Punto de acceso",
+         "s": "Capa 2",
+         "d": "Conecta los equipos inalámbricos a la red cableada: es el \"switch\" del Wi-Fi."
+        },
+        {
+         "x": "Bridge",
+         "s": "Capa 2",
+         "d": "Une dos segmentos de red y filtra el tráfico por MAC. El switch es, en el fondo, un bridge de muchos puertos."
+        },
+        {
+         "x": "Módem",
+         "s": "Capa 1",
+         "d": "Convierte la señal del proveedor (fibra, cable coaxial, línea telefónica) en una señal que entiende la red de la casa."
+        }
+       ]
+      },
+      {
+       "t": "clasificar",
+       "id": "u5-c1",
+       "q": "¿En qué capa del modelo OSI trabaja cada uno?",
+       "cats": [
+        "Capa 1",
+        "Capa 2",
+        "Capa 3"
+       ],
+       "items": [
+        {
+         "x": "Hub",
+         "c": 0
+        },
+        {
+         "x": "Switch",
+         "c": 1
+        },
+        {
+         "x": "Router",
+         "c": 2
+        },
+        {
+         "x": "Punto de acceso",
+         "c": 1
+        },
+        {
+         "x": "Repetidor",
+         "c": 0
+        }
+       ],
+       "fb": "Así es. Una forma de recordarlo: el hub mueve bits, el switch mueve tramas (MAC) y el router mueve paquetes (IP)."
+      }
+     ]
+    },
+    {
+     "titulo": "Cómo aprende un switch",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "El switch tiene una **tabla de direcciones MAC**. Cada vez que le llega una trama, mira la MAC de **origen** y anota en qué puerto está ese equipo. Luego mira la MAC de **destino**: si la conoce, envía la trama solo por ese puerto; si no la conoce, la **inunda** por todos los puertos menos por el que llegó."
+      },
+      {
+       "t": "widget",
+       "id": "u5-g1",
+       "w": "switch"
+      },
+      {
+       "t": "p",
+       "x": "El problema son los **bucles**: si hay dos caminos entre dos switches, las tramas de difusión dan vueltas para siempre y se multiplican hasta tumbar la red. Eso es una **tormenta de broadcast**. Los switches administrables usan el protocolo **STP** (Spanning Tree) para bloquear el camino sobrante."
+      },
+      {
+       "t": "nota",
+       "x": "Nunca conectes dos puertos del mismo switch con un cable \"para probar\", ni dos switches con dos cables, si no son administrables. Es la forma más rápida de tumbar la red de todo un piso.",
+       "titulo": "En la práctica",
+       "tipo": "ojo"
+      }
+     ]
+    },
+    {
+     "titulo": "Formas de reenviar tramas",
+     "bloques": [
+      {
+       "t": "lista",
+       "items": [
+        "**Store-and-forward:** recibe la trama completa, revisa que no tenga errores (con el FCS) y luego la envía. Es el más usado en redes de empresa.",
+        "**Cut-through:** apenas lee los primeros 6 bytes (la MAC de destino), la empieza a enviar. Es más rápido, pero deja pasar tramas dañadas.",
+        "**Fragment-free:** lee los primeros 64 bytes antes de enviar. Así descarta los fragmentos de colisiones (runts), que son más cortos."
+       ]
+      },
+      {
+       "t": "pregunta",
+       "id": "u5-q1",
+       "q": "¿Cuántos bytes lee un switch cut-through antes de empezar a reenviar?",
+       "o": [
+        {
+         "x": "6 bytes, los de la MAC de destino",
+         "ok": true,
+         "fb": "Correcto: con la MAC de destino ya sabe por dónde enviarla."
+        },
+        {
+         "x": "64 bytes",
+         "ok": false,
+         "fb": "Eso hace el modo fragment-free."
+        },
+        {
+         "x": "La trama completa",
+         "ok": false,
+         "fb": "Eso es store-and-forward."
+        }
+       ]
+      },
+      {
+       "t": "p",
+       "x": "También se clasifican por capa: un **switch de capa 2** decide solo con MAC; uno de **capa 3** además enruta entre VLAN usando IP, sin necesitar un router externo."
+      }
+     ]
+    },
+    {
+     "titulo": "El router y el \"router\" de tu casa",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "El **router** trabaja en la capa 3. Hace dos trabajos: **enrutar**, que es construir la tabla con los mejores caminos, y **reenviar**, que es sacar cada paquete por la interfaz que dice esa tabla. Además, a diferencia del switch, **no propaga los broadcast**: separa dominios de difusión."
+      },
+      {
+       "t": "p",
+       "x": "El aparato que el proveedor deja en tu casa no es solo un router. Es un **CPE**: un módem, un router, un switch de pocos puertos y un punto de acceso Wi-Fi en una sola caja. Además hace **NAT**: hace que todos los equipos de la casa salgan a Internet con una sola IP pública."
+      },
+      {
+       "t": "revela",
+       "id": "u5-r1",
+       "q": "Tu casa tiene 6 equipos conectados, pero un sitio web que muestra \"tu IP\" les dice lo mismo a todos. ¿Por qué?",
+       "a": "Por el NAT del router: los equipos tienen IP privadas (como 192.168.1.x) y el router las traduce a la única IP pública que te dio el proveedor. Desde afuera, toda la casa parece un solo equipo."
+      },
+      {
+       "t": "clasificar",
+       "id": "u5-c2",
+       "q": "¿Qué equipo resuelve cada necesidad?",
+       "cats": [
+        "Switch",
+        "Router",
+        "Punto de acceso"
+       ],
+       "items": [
+        {
+         "x": "Conectar 20 PC de la sala de sistemas",
+         "c": 0
+        },
+        {
+         "x": "Dar Wi-Fi a los portátiles",
+         "c": 2
+        },
+        {
+         "x": "Conectar la red del colegio con Internet",
+         "c": 1
+        },
+        {
+         "x": "Comunicar dos redes IP distintas",
+         "c": 1
+        }
+       ],
+       "fb": "Bien: switch para conectar en la misma red, punto de acceso para el Wi-Fi y router para pasar de una red a otra."
+      }
+     ]
+    }
+   ]
+  },
+  "u6": {
+   "secciones": [
+    {
+     "titulo": "Qué es el cableado estructurado",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Es una forma **ordenada y normalizada** de tender el cableado de un edificio para que sirva para voz, datos y video, sin depender de un fabricante. Se diseña una vez y soporta los equipos que se conecten durante muchos años."
+      },
+      {
+       "t": "p",
+       "x": "La norma principal es la familia **ANSI/TIA-568**. El módulo habla de \"EIA/TIA 568A\", que es la edición de 1995. Hoy T568A y T568B no son normas distintas sino dos esquemas de colores dentro de la misma norma."
+      },
+      {
+       "t": "nota",
+       "x": "Un buen cableado se nota: cada cable etiquetado, los patch cords ordenados, nada colgando y la documentación al día. Eso dice la norma ANSI/TIA-606 de administración.",
+       "titulo": "En la práctica"
+      }
+     ]
+    },
+    {
+     "titulo": "Los subsistemas",
+     "bloques": [
+      {
+       "t": "explorar",
+       "id": "u6-e1",
+       "q": "Recorre el edificio de afuera hacia el puesto de trabajo.",
+       "items": [
+        {
+         "x": "Entrada de servicios",
+         "s": "Acometida",
+         "d": "Por donde entran los cables del proveedor al edificio. Aquí suele estar el punto de demarcación y las protecciones eléctricas."
+        },
+        {
+         "x": "Sala de equipos",
+         "s": "Centro",
+         "d": "Aloja los equipos principales: servidores, routers y switches de núcleo."
+        },
+        {
+         "x": "Backbone (vertical)",
+         "s": "Entre pisos",
+         "d": "Une la sala de equipos con los cuartos de telecomunicaciones de cada piso. Se hace en estrella, normalmente con fibra o UTP Cat 6A."
+        },
+        {
+         "x": "Cuarto de telecomunicaciones",
+         "s": "Uno por piso",
+         "d": "Tiene el rack de 19 pulgadas con patch panels y switches del piso. Ahí termina el cableado horizontal."
+        },
+        {
+         "x": "Cableado horizontal",
+         "s": "Del piso",
+         "d": "Va del patch panel a cada toma de pared. Siempre en estrella y con un máximo de 90 m."
+        },
+        {
+         "x": "Área de trabajo",
+         "s": "El puesto",
+         "d": "La toma de pared y el patch cord que llega al computador, el teléfono IP o la impresora."
+        }
+       ]
+      },
+      {
+       "t": "clasificar",
+       "id": "u6-c1",
+       "q": "¿A qué subsistema pertenece cada elemento?",
+       "cats": [
+        "Horizontal",
+        "Backbone",
+        "Área de trabajo"
+       ],
+       "items": [
+        {
+         "x": "Cable de fibra entre el piso 1 y el piso 3",
+         "c": 1
+        },
+        {
+         "x": "Cable UTP del patch panel a la toma de una oficina",
+         "c": 0
+        },
+        {
+         "x": "Patch cord de la toma al PC",
+         "c": 2
+        },
+        {
+         "x": "Cable entre el rack del piso 2 y la sala de equipos",
+         "c": 1
+        }
+       ],
+       "fb": "Correcto: lo que une pisos o cuartos es backbone; lo que llega a la toma es horizontal; y lo que va de la toma al equipo es área de trabajo."
+      }
+     ]
+    },
+    {
+     "titulo": "Distancias: la regla de 90 + 10",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "El **enlace permanente** (del patch panel a la toma de pared) no puede pasar de **90 m**, sin importar el tipo de cable. Sumando los cordones de los dos extremos, el **canal** completo llega como máximo a **100 m**: quedan 10 m para patch cords."
+      },
+      {
+       "t": "widget",
+       "id": "u6-g1",
+       "w": "distancia"
+      },
+      {
+       "t": "lista",
+       "items": [
+        "Una tubería de ¾ de pulgada por cada dos cables UTP.",
+        "Respetar el radio de curvatura: no doblar el UTP más de 4 veces su diámetro.",
+        "No apretar los cables con amarras ni pisarlos con muebles.",
+        "No pasar el cableado de datos junto al cableado eléctrico."
+       ]
+      },
+      {
+       "t": "escribir",
+       "id": "u6-w1",
+       "q": "Un patch cord de 3 m en el área de trabajo y otro de 2 m en el rack. ¿Cuántos metros puede tener, como máximo, el enlace horizontal?",
+       "ok": [
+        "90",
+        "90m",
+        "90 m"
+       ],
+       "fb": "Siguen siendo 90 m: el enlace horizontal tiene su propio límite, y 90 + 3 + 2 = 95 m, que también cumple los 100 m del canal.",
+       "pista": "El horizontal tiene un límite fijo, aparte del total.",
+       "num": true
+      }
+     ]
+    },
+    {
+     "titulo": "Colores T568A y T568B",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Los 8 hilos se ponen en el conector RJ45 en un orden fijo. Con el clip hacia abajo y los contactos hacia ti, el pin 1 queda a la izquierda."
+      },
+      {
+       "t": "ordenar",
+       "id": "u6-o1",
+       "q": "Arma el orden **T568B**, del pin 1 al 8.",
+       "items": [
+        {
+         "x": "Blanco-naranja",
+         "color": "#F97316/#FFFFFF"
+        },
+        {
+         "x": "Naranja",
+         "color": "#F97316"
+        },
+        {
+         "x": "Blanco-verde",
+         "color": "#16A34A/#FFFFFF"
+        },
+        {
+         "x": "Azul",
+         "color": "#2563EB"
+        },
+        {
+         "x": "Blanco-azul",
+         "color": "#2563EB/#FFFFFF"
+        },
+        {
+         "x": "Verde",
+         "color": "#16A34A"
+        },
+        {
+         "x": "Blanco-marrón",
+         "color": "#92400E/#FFFFFF"
+        },
+        {
+         "x": "Marrón",
+         "color": "#92400E"
+        }
+       ],
+       "fb": "Ese es T568B. T568A es igual pero con los pares naranja y verde intercambiados: blanco-verde, verde, blanco-naranja, azul, blanco-azul, naranja, blanco-marrón, marrón.",
+       "pista": "Empieza con el par naranja y recuerda que el azul va en el centro, al revés (azul antes que blanco-azul).",
+       "colores": true
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**Cable directo:** el mismo esquema en los dos extremos (B y B). Se usa para PC–switch.",
+        "**Cable cruzado:** A en un extremo y B en el otro. Se usaba para PC–PC o switch–switch; hoy casi todos los equipos se ajustan solos (Auto-MDIX)."
+       ]
+      },
+      {
+       "t": "pregunta",
+       "id": "u6-q1",
+       "q": "Ponchaste un extremo en T568B y el otro en T568A. ¿Qué cable hiciste?",
+       "o": [
+        {
+         "x": "Un cable cruzado",
+         "ok": true,
+         "fb": "Correcto: cambian de lugar los pares naranja y verde entre un extremo y otro."
+        },
+        {
+         "x": "Un cable directo",
+         "ok": false,
+         "fb": "El directo lleva el mismo esquema en ambos extremos."
+        },
+        {
+         "x": "Un cable que no sirve",
+         "ok": false,
+         "fb": "Sí sirve: es un cable cruzado."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "titulo": "Probar y certificar",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Un **probador** de cable solo verifica la continuidad: que cada hilo llegue a su pin. Un **certificador** mide contra los límites de la norma: mapa de cableado, longitud, pérdida de inserción, diafonía (NEXT) y pérdida de retorno. Solo un certificado le asegura al cliente que el punto rinde lo que promete su categoría."
+      },
+      {
+       "t": "revela",
+       "id": "u6-r1",
+       "q": "El probador muestra los 8 hilos en verde, pero el equipo conectado solo negocia 100 Mbps en vez de 1 Gbps. ¿Qué pudo pasar?",
+       "a": "Que el cable tenga continuidad pero no rinda: destrenzado excesivo al ponchar, pares separados (split pair), un empalme, un cable de mala calidad o demasiado largo. El probador no lo detecta; un certificador sí."
+      }
+     ]
+    }
+   ]
+  },
+  "u7": {
+   "secciones": [
+    {
+     "titulo": "Para qué sirve la puesta a tierra",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "La **puesta a tierra** es un camino de baja resistencia hacia el suelo. Por ahí se van las corrientes peligrosas: una falla de un equipo, una descarga atmosférica, la estática o el ruido eléctrico. Protege a dos cosas: a las **personas**, para que no reciban una descarga al tocar un rack, y a los **equipos**, para que no se quemen ni fallen por el ruido."
+      },
+      {
+       "t": "revela",
+       "id": "u7-r1",
+       "q": "Tocas el chasis metálico de un rack y sientes \"corrientazo\". ¿Qué te dice eso?",
+       "a": "Que el rack no está unido a tierra (o la unión está floja) y hay una fuga de corriente en algún equipo. Es un riesgo para las personas: hay que desenergizar, reportarlo y revisar la conexión del rack a la barra de tierra."
+      },
+      {
+       "t": "nota",
+       "x": "Mira también la cubierta de los cables blindados: el blindaje solo funciona si está conectado a tierra. Un blindaje \"al aire\" puede captar más ruido que un UTP normal.",
+       "titulo": "Detalle importante",
+       "tipo": "ojo"
+      }
+     ]
+    },
+    {
+     "titulo": "La norma y sus piezas",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "En telecomunicaciones aplica la **ANSI/TIA-607** (el módulo la nombra como ANSI/TIA/EIA-607). Define un sistema de barras de cobre y conductores que une todo lo metálico de la red con la tierra del edificio:"
+      },
+      {
+       "t": "explorar",
+       "id": "u7-e1",
+       "q": "Toca cada pieza.",
+       "items": [
+        {
+         "x": "PBB",
+         "s": "Barra principal",
+         "d": "Barra principal de unión, en la entrada de servicios. Se conecta a la tierra eléctrica del edificio. Antes se llamaba TMGB."
+        },
+        {
+         "x": "SBB",
+         "s": "Barra secundaria",
+         "d": "Barra en cada cuarto de telecomunicaciones. Ahí se conectan los racks y bandejas del piso. Antes se llamaba TGB."
+        },
+        {
+         "x": "TBB",
+         "s": "Conductor troncal",
+         "d": "El cable de cobre que une la barra principal con las secundarias de cada piso."
+        },
+        {
+         "x": "Conductor de unión",
+         "s": "Del rack a la barra",
+         "d": "Cable que conecta cada rack, gabinete y bandeja a la barra de su cuarto."
+        }
+       ]
+      },
+      {
+       "t": "clasificar",
+       "id": "u7-c1",
+       "q": "¿Qué debe unirse (equipotencializarse) a la barra de tierra del cuarto?",
+       "cats": [
+        "Sí",
+        "No"
+       ],
+       "items": [
+        {
+         "x": "El rack de 19 pulgadas",
+         "c": 0
+        },
+        {
+         "x": "La bandeja portacables metálica",
+         "c": 0
+        },
+        {
+         "x": "El blindaje de un cable STP",
+         "c": 0
+        },
+        {
+         "x": "Un patch cord UTP sin blindaje",
+         "c": 1
+        }
+       ],
+       "fb": "Correcto. Todo lo metálico se une a la barra; el UTP no tiene partes metálicas expuestas que unir."
+      }
+     ]
+    },
+    {
+     "titulo": "En Colombia",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "La instalación eléctrica del edificio, incluida su puesta a tierra, la regula el **RETIE**. Esa parte la diseña y certifica un electricista con matrícula profesional."
+      },
+      {
+       "t": "p",
+       "x": "El técnico de redes **no diseña** la puesta a tierra del edificio: **se une** a ella siguiendo la TIA-607, conectando correctamente racks, bandejas y blindajes a las barras."
+      },
+      {
+       "t": "pregunta",
+       "id": "u7-q1",
+       "q": "En una obra, ¿quién diseña y certifica el sistema de puesta a tierra del edificio?",
+       "o": [
+        {
+         "x": "Un electricista con matrícula, según el RETIE",
+         "ok": true,
+         "fb": "Así es. Al técnico de redes le corresponde unir su sistema a esa tierra."
+        },
+        {
+         "x": "El técnico de redes",
+         "ok": false,
+         "fb": "El técnico de redes conecta su infraestructura a la tierra, pero no la diseña ni la certifica."
+        },
+        {
+         "x": "El proveedor de Internet",
+         "ok": false,
+         "fb": "El proveedor solo llega hasta su punto de demarcación."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "titulo": "Qué pasa cuando está mal hecha",
+     "bloques": [
+      {
+       "t": "lista",
+       "items": [
+        "**Ruido en la señal:** errores, retransmisiones y una red lenta sin causa aparente.",
+        "**Daño de equipos:** puertos de switch quemados, sobre todo después de tormentas eléctricas.",
+        "**Riesgo para las personas:** descargas al tocar racks o equipos.",
+        "**Lazos de tierra:** si los equipos están unidos a tierras diferentes, circula corriente por los blindajes de los cables."
+       ]
+      },
+      {
+       "t": "ordenar",
+       "id": "u7-o1",
+       "q": "Ordena el camino de una corriente de falla desde un rack del piso 3 hasta el suelo.",
+       "items": [
+        "Rack",
+        "Conductor de unión",
+        "Barra secundaria (SBB)",
+        "Conductor troncal (TBB)",
+        "Barra principal (PBB)",
+        "Tierra del edificio"
+       ],
+       "fb": "Ese es el recorrido: del rack a la barra de su cuarto, de ahí por el troncal hasta la barra principal y luego a la tierra del edificio."
+      }
+     ]
+    }
+   ]
+  },
+  "u8": {
+   "secciones": [
+    {
+     "titulo": "Cómo se escribe una dirección IPv4",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Una dirección **IPv4** identifica a un equipo dentro de una red. Tiene **32 bits**, que para leerlos mejor se separan en **4 octetos** de 8 bits y cada octeto se escribe en decimal: `192.168.1.10`."
+      },
+      {
+       "t": "p",
+       "x": "Cada bit de un octeto tiene un valor: 128, 64, 32, 16, 8, 4, 2 y 1. Para pasar de binario a decimal se suman los valores de los bits que están en 1. Por eso un octeto va de 0 a 255."
+      },
+      {
+       "t": "widget",
+       "id": "u8-g1",
+       "w": "octeto"
+      },
+      {
+       "t": "escribir",
+       "id": "u8-w1",
+       "q": "¿Cuánto es `11000000` en decimal?",
+       "ok": [
+        "192"
+       ],
+       "fb": "128 + 64 = 192. Es el primer octeto de las redes 192.168.x.x.",
+       "pista": "Suma los valores de los bits encendidos: los dos primeros valen 128 y 64.",
+       "num": true
+      }
+     ]
+    },
+    {
+     "titulo": "Red y host: la máscara",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Una IP tiene dos partes: la de **red** (en qué red está el equipo) y la de **host** (qué equipo es dentro de esa red). La **máscara** marca dónde termina una y empieza la otra: los bits en 1 son de red y los bits en 0 son de host."
+      },
+      {
+       "t": "p",
+       "x": "La máscara se escribe en decimal (`255.255.255.0`) o como **prefijo**, contando los unos: `/24`."
+      },
+      {
+       "t": "tabla",
+       "cab": [
+        "Prefijo",
+        "Máscara",
+        "Bits de host",
+        "Hosts útiles"
+       ],
+       "filas": [
+        [
+         "/24",
+         "255.255.255.0",
+         "8",
+         "254"
+        ],
+        [
+         "/25",
+         "255.255.255.128",
+         "7",
+         "126"
+        ],
+        [
+         "/26",
+         "255.255.255.192",
+         "6",
+         "62"
+        ],
+        [
+         "/27",
+         "255.255.255.224",
+         "5",
+         "30"
+        ],
+        [
+         "/30",
+         "255.255.255.252",
+         "2",
+         "2"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "x": "**Hosts útiles = 2 elevado a los bits de host, menos 2.** Se restan dos porque la primera dirección es la **dirección de red** y la última es la de **broadcast** (para hablarle a todos a la vez). Ninguna de las dos se le asigna a un equipo."
+      },
+      {
+       "t": "widget",
+       "id": "u8-g2",
+       "w": "mascara"
+      },
+      {
+       "t": "revela",
+       "id": "u8-r1",
+       "q": "En la red 192.168.1.0/24, ¿cuál es la dirección de red, cuál la de broadcast y qué rango queda para los equipos?",
+       "a": "Red: 192.168.1.0. Broadcast: 192.168.1.255. Para equipos quedan de 192.168.1.1 a 192.168.1.254: 254 hosts. Normalmente el router toma la .1."
+      }
+     ]
+    },
+    {
+     "titulo": "Clases, privadas y especiales",
+     "bloques": [
+      {
+       "t": "p",
+       "x": "Antes las redes se repartían por **clases** según el primer octeto. Hoy se usan prefijos de cualquier tamaño (CIDR), pero las clases siguen apareciendo en exámenes y documentación:"
+      },
+      {
+       "t": "tabla",
+       "cab": [
+        "Clase",
+        "Primer octeto",
+        "Prefijo por defecto"
+       ],
+       "filas": [
+        [
+         "A",
+         "1 a 126",
+         "/8"
+        ],
+        [
+         "B",
+         "128 a 191",
+         "/16"
+        ],
+        [
+         "C",
+         "192 a 223",
+         "/24"
+        ],
+        [
+         "D",
+         "224 a 239",
+         "Multicast"
+        ],
+        [
+         "E",
+         "240 a 255",
+         "Experimental"
+        ]
+       ]
+      },
+      {
+       "t": "lista",
+       "items": [
+        "**Privadas** (no salen a Internet sin NAT): `10.0.0.0/8`, `172.16.0.0/12` y `192.168.0.0/16`.",
+        "**Loopback:** `127.0.0.1` es el propio equipo; sirve para probar la tarjeta y la pila TCP/IP.",
+        "**APIPA:** si un equipo tiene `169.254.x.x` es que no recibió IP del servidor DHCP. Revisa el cable o el DHCP."
+       ]
+      },
+      {
+       "t": "clasificar",
+       "id": "u8-c1",
+       "q": "¿Pública, privada o especial?",
+       "cats": [
+        "Privada",
+        "Pública",
+        "Especial"
+       ],
+       "items": [
+        {
+         "x": "192.168.0.15",
+         "c": 0
+        },
+        {
+         "x": "10.20.30.40",
+         "c": 0
+        },
+        {
+         "x": "8.8.8.8",
+         "c": 1
+        },
+        {
+         "x": "127.0.0.1",
+         "c": 2
+        },
+        {
+         "x": "169.254.10.3",
+         "c": 2
+        },
+        {
+         "x": "172.20.1.1",
+         "c": 0
+        }
+       ],
+       "fb": "Muy bien. Ojo con 172: solo es privada de 172.16 a 172.31."
+      },
+      {
+       "t": "pregunta",
+       "id": "u8-q1",
+       "q": "Un compañero te dice que su PC tiene la IP 169.254.33.7 y no navega. ¿Qué pasa?",
+       "o": [
+        {
+         "x": "No obtuvo IP del DHCP y se asignó una APIPA",
+         "ok": true,
+         "fb": "Correcto. Revisa el cable o el Wi-Fi y que el router o servidor DHCP funcione; luego ejecuta ipconfig /renew."
+        },
+        {
+         "x": "Tiene una IP pública",
+         "ok": false,
+         "fb": "169.254 no es pública: es el rango que Windows se asigna solo cuando no encuentra DHCP."
+        },
+        {
+         "x": "Está en la clase D",
+         "ok": false,
+         "fb": "La clase D empieza en 224."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "titulo": "Comandos para diagnosticar",
+     "bloques": [
+      {
+       "t": "tabla",
+       "cab": [
+        "Comando",
+        "Para qué sirve"
+       ],
+       "filas": [
+        [
+         "`ipconfig`",
+         "Ver la IP, la máscara y la puerta de enlace del equipo"
+        ],
+        [
+         "`ipconfig /all`",
+         "Además: MAC, servidores DNS y si la IP vino por DHCP"
+        ],
+        [
+         "`ping 192.168.1.1`",
+         "Ver si otro equipo responde (usa ICMP)"
+        ],
+        [
+         "`tracert 8.8.8.8`",
+         "Ver los saltos (routers) hasta un destino"
+        ]
+       ]
+      },
+      {
+       "t": "ordenar",
+       "id": "u8-o1",
+       "q": "Un PC no navega. Ordena los pasos de diagnóstico de lo más cercano a lo más lejano.",
+       "items": [
+        "ipconfig: ¿tiene IP válida?",
+        "ping 127.0.0.1: ¿funciona su propia pila TCP/IP?",
+        "ping a la puerta de enlace: ¿llega al router?",
+        "ping 8.8.8.8: ¿sale a Internet?",
+        "ping www.google.com: ¿funciona el DNS?"
+       ],
+       "fb": "Así se aísla la falla por capas: si llega a 8.8.8.8 pero no a www.google.com, el problema es de DNS y no de conexión.",
+       "pista": "Empieza por el propio equipo y termina en los nombres de dominio."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}
