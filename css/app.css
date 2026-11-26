@@ -628,7 +628,15 @@ dialog::backdrop { background: rgba(11, 18, 32, 0.66); }
   flex: 1; min-height: 0; display: flex; flex-direction: column;
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
 }
-.chat__log { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; padding: var(--s5) var(--s5) var(--s3); outline: none; }
+.chat__view { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.chat__jump {
+  position: absolute; right: var(--s4); bottom: var(--s3); width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: 50%; border: 1px solid var(--line-strong); color: var(--text);
+  background: color-mix(in srgb, var(--slate) 70%, var(--navy-deep)); box-shadow: var(--shadow-float);
+}
+.chat__jump .ico { transform: rotate(180deg); }
+.chat__jump[hidden] { display: none; }
+.chat__log { flex: 1; min-height: 0; touch-action: pan-y; -webkit-overflow-scrolling: touch; overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; padding: var(--s5) var(--s5) var(--s3); outline: none; }
 .chat__log:focus-visible { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--emerald) 60%, transparent); }
 .chat__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s5); }
 
@@ -654,6 +662,8 @@ dialog::backdrop { background: rgba(11, 18, 32, 0.66); }
 .msg__body li + li { margin-top: 0.3em; }
 .msg__body li::marker { color: var(--text-faint); }
 .msg__h { font-weight: 700; }
+.msg__body sup { font-size: 0.72em; line-height: 0; }
+.math { white-space: nowrap; }
 .msg__body > .msg__h:not(:first-child) { margin-top: 1em; }
 .msg__body code { font-size: 0.9em; background: rgba(11, 18, 32, 0.42); padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line); }
 .msg__body pre { padding: var(--s3) var(--s4); background: rgba(11, 18, 32, 0.42); border: 1px solid var(--line); border-radius: var(--r-xs); overflow-x: auto; line-height: 1.5; }
@@ -807,9 +817,9 @@ dialog::backdrop { background: rgba(11, 18, 32, 0.66); }
   .msg--assistant { padding-left: var(--s3); }
   .chat__dock { padding: var(--s2); }
   .chat__note { font-size: 0.74rem; }
-  /* Con el teclado abierto la barra de pestañas estorba: se oculta y el chat toma ese espacio. */
-  .shell:has(.chat__input:focus) .rail { display: none; }
-  .shell:has(.chat__input:focus) .chat { --dock: var(--s3); }
+  /* Con el teclado abierto (clase puesta por app.js) la barra de pestañas se oculta y el chat toma ese espacio. */
+  .kb-open .rail { display: none; }
+  .kb-open .chat { --dock: var(--s3); }
   .strip { grid-template-columns: repeat(2, 1fr); }
   .strip--ip { grid-template-columns: 1fr; }
   .androw { grid-template-columns: 1fr; gap: 4px; }

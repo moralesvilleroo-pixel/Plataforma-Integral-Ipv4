@@ -36,17 +36,37 @@ function saveHistory(list) {
 }
 
 /** Convierte el texto de la IA en nodos: párrafos, listas, bloques de código, `código` y **negritas**. Nunca usa innerHTML. */
+/** Texto con potencias: 2^h y 2^{h} se muestran como superíndice. */
+function powers(text) {
+  const out = [];
+  let last = 0;
+  for (const m of text.matchAll(/([0-9A-Za-z)])\^(\{[^}]{1,12}\}|[0-9A-Za-z]{1,4})/g)) {
+    out.push(text.slice(last, m.index + 1));
+    out.push(h('sup', { text: m[2].replace(/^\{|\}$/g, '') }));
+    last = m.index + m[0].length;
+  }
+  out.push(text.slice(last));
+  return out;
+}
+
+/** Limpia fórmulas escritas en LaTeX ($2^{h} - 2$) para que se lean como texto normal. */
+function tex(src) {
+  return src.replace(/\\(times|cdot)/g, '×').replace(/\\(left|right)/g, '').replace(/\\text\{([^}]*)\}/g, '$1').replace(/\\,/g, ' ');
+}
+
 function inline(text) {
   const out = [];
-  const re = /(`[^`]+`|\*\*[^*]+\*\*)/g;
+  const re = /(`[^`]+`|\*\*[^*]+\*\*|\$[^$\n]{1,80}\$)/g;
   let last = 0;
   for (const m of text.matchAll(re)) {
-    if (m.index > last) out.push(text.slice(last, m.index));
+    if (m.index > last) out.push(powers(text.slice(last, m.index)));
     const t = m[0];
-    out.push(t.startsWith('`') ? h('code', { text: t.slice(1, -1) }) : h('strong', { text: t.slice(2, -2) }));
+    if (t.startsWith('`')) out.push(h('code', { text: t.slice(1, -1) }));
+    else if (t.startsWith('$')) out.push(h('span', { class: 'math' }, powers(tex(t.slice(1, -1)))));
+    else out.push(h('strong', {}, powers(t.slice(2, -2))));
     last = m.index + t.length;
   }
-  if (last < text.length) out.push(text.slice(last));
+  if (last < text.length) out.push(powers(text.slice(last)));
   return out;
 }
 
@@ -134,6 +154,10 @@ export function renderChat(root) {
   const log = h('div', { class: 'chat__log', tabindex: '0', 'aria-label': 'Mensajes' });
   const list = h('ol', { class: 'chat__list', 'aria-live': 'polite', 'aria-relevant': 'additions' });
   log.append(list);
+  const jump = h('button', { class: 'chat__jump', type: 'button', 'aria-label': 'Ir al último mensaje', hidden: true,
+    onclick: () => toBottom() }, icon('i-send'));
+  const nearEnd = () => log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+  log.addEventListener('scroll', () => { jump.hidden = nearEnd(); }, { passive: true });
 
   const meter = h('span', { class: 'quota__bar', 'aria-hidden': 'true' }, h('i'));
   const quotaText = h('span', { class: 'sk sk-line sk-inline quota__sk' });
@@ -179,8 +203,8 @@ export function renderChat(root) {
   const toBottom = (smooth = true) => log.scrollTo({ top: log.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
   // Una respuesta larga se muestra desde su inicio, no desde el final.
   const toMessage = (el) => {
-    const top = el.offsetTop - list.offsetTop - 8;
-    log.scrollTo({ top: Math.min(top, log.scrollHeight), behavior: 'smooth' });
+    const top = el.getBoundingClientRect().top - log.getBoundingClientRect().top + log.scrollTop - 12;
+    log.scrollTo({ top, behavior: 'smooth' });
   };
 
   async function ask(text) {
@@ -197,6 +221,7 @@ export function renderChat(root) {
     list.setAttribute('aria-busy', 'true');
     form.classList.add('is-busy');
     area.value = '';
+    if (coarse) area.blur();
     area.placeholder = 'El asistente está respondiendo';
     refresh();
     toBottom();
@@ -270,9 +295,9 @@ export function renderChat(root) {
       h('h1', { tabindex: '-1', text: 'Asistente de redes' }),
       h('div', { class: 'chat__tools' }, quota, reset)),
     h('section', { class: 'chat__panel', 'aria-label': 'Conversación' },
-      log,
+      h('div', { class: 'chat__view' }, log, jump),
       dock)));
   drawList();
   refresh();
-  requestAnimationFrame(() => toBottom(false));
+  requestAnimationFrame(() => { toBottom(false); jump.hidden = nearEnd(); });
 }

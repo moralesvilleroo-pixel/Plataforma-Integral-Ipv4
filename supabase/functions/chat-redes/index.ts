@@ -6,6 +6,8 @@ const PROVIDER = (Deno.env.get('AI_PROVIDER') ?? 'anthropic').toLowerCase();
 const ANTHROPIC_MODEL = Deno.env.get('ANTHROPIC_MODEL') ?? 'claude-haiku-5-5';
 const GEMINI_MODEL = Deno.env.get('GEMINI_MODEL') ?? 'gemini-3.8-flash';
 // Modelos de respaldo, separados por comas, por si el principal está saturado.
+// Razonamiento bajo: el recomendado para chat; responde varias veces más rápido que el nivel medio por defecto.
+const GEMINI_THINKING = Deno.env.get('GEMINI_THINKING') ?? 'low';
 const GEMINI_FALLBACKS = (Deno.env.get('GEMINI_FALLBACK_MODELS') ?? 'gemini-3.5-flash-lite,gemini-3.6-flash')
   .split(',').map((m) => m.trim()).filter(Boolean);
 const MAX_TURNS = 10;
@@ -88,6 +90,7 @@ REGLAS:
 6. Cuando la pregunta es de teoría (qué es, para qué sirve, diferencias), explica directamente y cierra con una pregunta corta para que el estudiante compruebe lo que entendió.
 7. Cuando el tema esté en el material del módulo, básate en él. Si algo del módulo está desactualizado, dilo y da la versión vigente.
 8. Si no estás seguro de un dato, dilo. No inventes normas, cifras ni fuentes.
+9. Formato: texto plano con **negritas**, `código` para IPs y máscaras, y listas con guion o numeradas. Nunca uses LaTeX ni signos $. Escribe las fórmulas así: 2^h - 2 = 62.
 
 MATERIAL DEL MÓDULO:
 ${KNOWLEDGE}`;
@@ -146,7 +149,7 @@ class BusyError extends Error {}
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function geminiOnce(model: string, messages: Msg[], key: string): Promise<string> {
+async function geminiOnce(model: string, messages: Msg[], key: string, thinking = GEMINI_THINKING !== 'off'): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
   const res = await fetch(url, {
     method: 'POST',
@@ -154,9 +157,18 @@ async function geminiOnce(model: string, messages: Msg[], key: string): Promise<
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: SYSTEM }] },
       contents: messages.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-      generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.3 },
+      generationConfig: {
+        maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.3,
+        ...(thinking ? { thinkingConfig: { thinkingLevel: GEMINI_THINKING } } : {}),
+      },
     }),
   });
+  // Un modelo que no acepta el nivel de razonamiento se reintenta sin él en vez de fallar.
+  if (res.status === 400 && thinking) {
+    const body = await res.text();
+    if (/thinking/i.test(body)) return geminiOnce(model, messages, key, false);
+    throw new Error(`gemini_400 (${model}): ${body.slice(0, 300)}`);
+  }
   if (!res.ok) {
     const detail = `gemini_${res.status} (${model}): ${(await res.text()).slice(0, 300)}`;
     if (res.status === 429 || res.status >= 500 || res.status === 404) throw new BusyError(detail);

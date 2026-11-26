@@ -438,6 +438,23 @@ try { savedRail = localStorage.getItem(RAIL_KEY); } catch { savedRail = null; }
 setRail(savedRail === null ? matchMedia('(max-width: 1024px)').matches : savedRail === '1', false);
 railToggle.addEventListener('click', () => setRail(!shell.classList.contains('is-collapsed'), true));
 
+// ---------- Teclado en pantalla ----------
+// La barra de pestañas se oculta solo mientras el teclado está abierto de verdad.
+// Tener un campo enfocado no basta: en Android el teclado se cierra con Atrás y el foco se queda.
+let fullHeight = 0;
+function checkKeyboard() {
+  const vv = window.visualViewport;
+  const now = vv ? vv.height : window.innerHeight;
+  fullHeight = Math.max(fullHeight, window.innerHeight, now);
+  const typing = document.activeElement?.matches?.('input, textarea, select, [contenteditable]') ?? false;
+  document.documentElement.classList.toggle('kb-open', typing && fullHeight - now > 150);
+}
+window.visualViewport?.addEventListener('resize', checkKeyboard);
+window.addEventListener('resize', checkKeyboard);
+document.addEventListener('focusin', () => setTimeout(checkKeyboard, 350));
+document.addEventListener('focusout', () => setTimeout(checkKeyboard, 50));
+screen.orientation?.addEventListener('change', () => { fullHeight = 0; setTimeout(checkKeyboard, 400); });
+
 // ---------- Instalación como app (PWA) ----------
 
 let installPrompt = null;
