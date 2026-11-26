@@ -2,6 +2,7 @@
 import { h } from './lib.js';
 import { configured, currentUser, signIn, signUp, signOut, signInWithGoogle, recoverPassword, updatePassword, rpc } from './supa.js';
 import { syncStatus, onSync } from './sync.js';
+import { THEMES, currentTheme, applyTheme } from './themes.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -233,6 +234,7 @@ function authScreen(root, opts) {
     h('h1', { class: 'visually-hidden', tabindex: '-1', text: 'Tu cuenta' }),
     opts.message ? notice(opts.message.kind, opts.message.text) : null,
     card,
+    themeSection(),
     deviceSection(opts),
     legalLinks()));
   opts.message = null;
@@ -252,6 +254,25 @@ function syncLine() {
   draw(syncStatus);
   const off = onSync((s) => { if (p.isConnected) draw(s); else off(); });
   return p;
+}
+
+/** Selector de paleta: cambia los tres colores de la app al instante. */
+function themeSection() {
+  const grid = h('div', { class: 'themes', role: 'group', 'aria-label': 'Paletas de color' });
+  const draw = () => {
+    const active = currentTheme();
+    grid.replaceChildren(...THEMES.map((t) => {
+      const dots = h('span', { class: 'theme__dots', 'aria-hidden': 'true' }, t.c.map((c) => { const i = h('i'); i.style.background = c; return i; }));
+      return h('button', { class: 'theme', type: 'button', 'aria-pressed': String(t.id === active),
+        onclick: () => { applyTheme(t.id); draw(); grid.querySelector('[aria-pressed="true"]')?.focus(); } },
+        dots, h('span', { class: 'theme__name', text: t.name }), h('span', { class: 'theme__desc', text: t.desc }));
+    }));
+  };
+  draw();
+  return h('section', { class: 'panel', 'aria-labelledby': 'theme-h' },
+    h('h2', { id: 'theme-h', text: 'Apariencia' }),
+    h('p', { class: 'muted', text: 'Elige la paleta de la app. Se guarda en este dispositivo.' }),
+    grid);
 }
 
 function legalLinks() {
@@ -311,6 +332,7 @@ function loggedIn(root, opts) {
         h('div', { class: 'row' },
           h('button', { class: 'btn btn--primary', type: 'button', text: 'Sincronizar ahora', onclick: opts.onSyncNow }),
           logout))),
+    themeSection(),
     deviceSection(opts),
     h('section', { class: 'panel', 'aria-labelledby': 'zone-h' },
       h('h2', { id: 'zone-h', text: 'Borrar cuenta' }),
@@ -326,6 +348,7 @@ export function renderAccount(root, opts) {
   if (!configured) {
     root.replaceChildren(h('div', { class: 'enter account' },
       head('Tu cuenta', 'Las cuentas aún no están activadas en esta versión: tu progreso se guarda en este dispositivo.'),
+      themeSection(),
       deviceSection(opts),
       legalLinks()));
     return;
