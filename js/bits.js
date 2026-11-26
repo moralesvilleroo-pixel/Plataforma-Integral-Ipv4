@@ -92,51 +92,99 @@ function octetLab(state, save) {
     h('div', { class: 'row' }, next, reset));
 }
 
-// ---------- 2. Deslizador de prefijo ----------
+// ---------- 2. Explorador: red, subred y host sobre una IP real ----------
 
 function prefixLab() {
-  const range = h('input', { type: 'range', min: 1, max: 32, value: 24, id: 'cidr-range', class: 'range' });
+  let ipInt = ipToInt(`192.168.${randInt(0, 254)}.${randInt(1, 254)}`);
+  let base = 24;
+  let p = 26;
+
+  const range = h('input', { type: 'range', min: 8, max: 30, value: p, id: 'cidr-range', class: 'range' });
   const label = h('label', { for: 'cidr-range', class: 'range__label' });
-  const strip = h('div', { class: 'strip', 'aria-hidden': 'true' });
+  const baseSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Red original' });
+  const ipLine = h('p', { class: 'explorer__ip mono', 'aria-live': 'polite' });
+  const strip = h('div', { class: 'strip strip--ip', role: 'group', 'aria-label': 'Los 32 bits de la dirección. Toca un bit para cambiarlo.' });
+  const facts = h('dl', { class: 'kv' });
+  const magic = h('div', { class: 'magic' });
   const cells = [];
+
   for (let o = 0; o < 4; o++) {
     const oct = h('div', { class: 'strip__oct' });
-    for (let i = 0; i < 8; i++) { const c = h('span', { class: 'strip__bit' }); cells.push(c); oct.append(c); }
+    for (let i = 0; i < 8; i++) {
+      const idx = o * 8 + i;
+      const c = h('button', { class: 'strip__bit', type: 'button' });
+      c.addEventListener('click', () => { ipInt = (ipInt ^ (1 << (31 - idx))) >>> 0; draw(); });
+      cells.push(c);
+      oct.append(c);
+    }
     strip.append(oct);
   }
-  const facts = h('dl', { class: 'kv' });
+
+  for (const b of [8, 16, 24]) {
+    baseSeg.append(h('button', { type: 'button', 'aria-pressed': String(b === base), onclick: (e) => {
+      base = b;
+      for (const x of baseSeg.children) x.setAttribute('aria-pressed', String(x === e.currentTarget));
+      if (p < base) { p = base; range.value = String(p); }
+      draw();
+    } }, `/${b} (clase ${b === 8 ? 'A' : b === 16 ? 'B' : 'C'})`));
+  }
 
   function draw() {
-    const p = Number(range.value);
-    label.textContent = `Prefijo /${p}`;
+    p = Math.max(Number(range.value), base);
+    range.value = String(p);
+    const borrowed = p - base;
+    label.textContent = `Prefijo /${p}: ${base} de red, ${borrowed} de subred, ${32 - p} de host`;
+    const maskInt = (0xffffffff << (32 - p)) >>> 0;
+    const net = (ipInt & maskInt) >>> 0;
+    const bc = (net | (~maskInt >>> 0)) >>> 0;
     cells.forEach((c, i) => {
-      c.textContent = i < p ? '1' : '0';
-      c.classList.toggle('strip__bit--net', i < p);
+      const bit = (ipInt >>> (31 - i)) & 1;
+      const part = i < base ? 'net' : i < p ? 'sub' : 'host';
+      c.textContent = String(bit);
+      c.className = `strip__bit strip__bit--${part}`;
+      c.setAttribute('aria-label', `Bit ${i + 1}: ${bit}, parte de ${part === 'net' ? 'red' : part === 'sub' ? 'subred' : 'host'}`);
     });
-    const hostBits = 32 - p;
-    const total = 2 ** hostBits;
-    const useful = p >= 31 ? (p === 32 ? 1 : 2) : total - 2;
+    ipLine.textContent = `${intToIp(ipInt)}/${p}`;
     const fmt = (n) => n.toLocaleString('es-CO');
+    const hostBits = 32 - p;
     facts.replaceChildren(...[
+      ['Dirección de red', intToIp(net)],
+      ['Broadcast', intToIp(bc)],
+      ['Rango útil', p >= 31 ? 'Enlace especial' : `${intToIp(net + 1)} a ${intToIp(bc - 1)}`],
       ['Máscara', cidrToMask(p)],
-      ['Wildcard', cidrToWildcard(p)],
-      ['Bits de red / host', `${p} / ${hostBits}`],
-      ['Direcciones por red', fmt(total)],
-      ['Hosts útiles', p >= 31 ? `${fmt(useful)} (enlace especial)` : `2^${hostBits} - 2 = ${fmt(useful)}`],
-      ['Subredes al partir un /24', p >= 24 ? `2^${p - 24} = ${fmt(2 ** (p - 24))}` : 'Mayor que un /24'],
+      ['Hosts útiles', p >= 31 ? '2' : `2^${hostBits} - 2 = ${fmt(2 ** hostBits - 2)}`],
+      ['Subredes con ' + borrowed + ' bits prestados', `2^${borrowed} = ${fmt(2 ** borrowed)}`],
     ].map(([k, v]) => h('div', {}, h('dt', { text: k }), h('dd', { text: v }))));
+
+    // Número mágico: el salto en el octeto donde se corta la máscara.
+    const oct = Math.floor((p - 1) / 8);
+    const m = Number(cidrToMask(p).split('.')[oct]);
+    const jump = 256 - m;
+    const val = (ipInt >>> (24 - oct * 8)) & 255;
+    const starts = [];
+    for (let x = 0; x < 256 && starts.length < 8; x += jump) starts.push(x);
+    magic.replaceChildren(
+      h('p', {}, h('b', { text: 'Atajo del salto: ' }), `octeto ${oct + 1}, máscara ${m}. Salto = 256 - ${m} = ${jump}.`),
+      h('p', { class: 'muted' }, `Las redes en ese octeto empiezan en ${starts.join(', ')}${256 / jump > 8 ? '…' : ''}. Tu ${val} cae en la que empieza en ${Math.floor(val / jump) * jump}.`));
   }
+
   range.addEventListener('input', draw);
+  const another = h('button', { class: 'btn btn--ghost btn--sm', type: 'button', text: 'Otra IP', onclick: () => {
+    const first = base === 8 ? randInt(1, 126) : base === 16 ? randInt(128, 191) : randInt(192, 223);
+    ipInt = ipToInt(`${first}.${randInt(0, 255)}.${randInt(0, 255)}.${randInt(1, 254)}`);
+    draw();
+  } });
   draw();
 
   return h('section', { class: 'panel bits', 'aria-labelledby': 'pre-h' },
-    h('h2', { id: 'pre-h', text: 'Red y host en los 32 bits' }),
-    h('p', { class: 'muted', text: 'Mueve el prefijo. Los bits en verde son la parte de red; los demás, la parte de host.' }),
-    label, range, strip,
+    h('div', { class: 'bits__head' }, h('h2', { id: 'pre-h', text: 'Red, subred y host en una IP' }), another),
+    h('p', { class: 'muted', text: 'Elige la red original y mueve el prefijo: los bits que pides prestados pasan de host a subred. Toca cualquier bit de la IP y mira cómo cambian la red y el broadcast.' }),
+    baseSeg, label, range, ipLine, strip,
     h('p', { class: 'strip__legend' },
       h('span', { class: 'strip__key strip__key--net' }), 'Red',
+      h('span', { class: 'strip__key strip__key--sub' }), 'Subred (prestados)',
       h('span', { class: 'strip__key' }), 'Host'),
-    facts);
+    facts, magic);
 }
 
 // ---------- 3. Operación AND paso a paso ----------

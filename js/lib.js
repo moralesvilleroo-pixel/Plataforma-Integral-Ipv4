@@ -33,7 +33,7 @@ export const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1))
 
 const KEY = 'subnetpro:v1';
 
-const fresh = () => ({ units: {}, cards: {}, practice: { level: 1, streak: 0 }, days: [] });
+const fresh = () => ({ units: {}, cards: {}, practice: { level: 1, streak: 0 }, days: [], drills: { best: 0, examBest: 0, types: {} }, flags: {} });
 
 const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 
@@ -63,6 +63,16 @@ export function loadState() {
     s.practice.level = Math.min(4, Math.max(1, toInt(raw.practice.level) || 1));
     s.practice.streak = toInt(raw.practice.streak);
   }
+  if (isObj(raw.drills)) {
+    s.drills.best = toInt(raw.drills.best);
+    s.drills.examBest = Math.min(10, toInt(raw.drills.examBest));
+    if (isObj(raw.drills.types)) {
+      for (const [k, v] of Object.entries(raw.drills.types)) {
+        if (/^[a-z0-9]{2,20}$/.test(k) && isObj(v)) s.drills.types[k] = { ok: toInt(v.ok), fail: toInt(v.fail) };
+      }
+    }
+  }
+  if (isObj(raw.flags)) s.flags = { syncNudge: raw.flags.syncNudge === true };
   if (Array.isArray(raw.days)) s.days = raw.days.filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).slice(-400);
   return s;
 }

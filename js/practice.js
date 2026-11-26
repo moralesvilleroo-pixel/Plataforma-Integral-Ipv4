@@ -197,6 +197,8 @@ export function renderPractice(root, state, save) {
         h('p', { class: 'lead', text: 'Primero ves el procedimiento completo; luego se ocultan pasos hasta que lo resuelves solo. Dos ejercicios correctos seguidos te suben de nivel.' }),
         h('div', { class: 'row' },
           h('a', { class: 'btn btn--ghost btn--sm', href: '#bits', text: 'Laboratorio de bits' }),
+          h('a', { class: 'btn btn--ghost btn--sm', href: '#reto', text: 'Reto de 60 s' }),
+          h('a', { class: 'btn btn--ghost btn--sm', href: '#examen', text: 'Examen sin ayudas' }),
           h('a', { class: 'btn btn--ghost btn--sm', href: '#calculadora', text: 'Abrir la calculadora' }))),
       h('div', { class: 'panel' },
         h('div', { class: 'row', style: null }, levelSeg),

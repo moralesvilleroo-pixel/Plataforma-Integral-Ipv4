@@ -6,6 +6,7 @@ import { renderCalculator } from './calculator.js';
 import { renderAccount, renderNewPassword } from './account.js';
 import { renderChat } from './chat.js';
 import { renderBits } from './bits.js';
+import { renderDrill, renderExam, renderBlocked, examActive } from './drills.js';
 import { configured, currentUser, onAuthChange, consumeAuthRedirect } from './supa.js';
 import { syncNow, schedulePush } from './sync.js';
 
@@ -150,7 +151,11 @@ function viewHome() {
           h('h2', { id: 'today-h', text: 'Repaso de hoy' }),
           h('p', { class: 'today__num' }, String(due), h('small', { text: due === 1 ? 'pendiente' : 'pendientes' })),
           h('p', { text: todayText }),
-          h('div', { class: 'row' }, todayCta, h('a', { class: 'btn btn--ghost', href: '#practica', text: 'Practicar subneteo' }))),
+          h('div', { class: 'row' }, todayCta, h('a', { class: 'btn btn--ghost', href: '#practica', text: 'Practicar subneteo' })),
+          h('div', { class: 'quick' },
+            h('a', { class: 'quick__item', href: '#reto' }, h('b', { text: 'Reto de 60 s' }), h('span', { text: 'Máscaras, binario y saltos contra el reloj' })),
+            h('a', { class: 'quick__item', href: '#examen' }, h('b', { text: 'Examen sin ayudas' }), h('span', { text: '10 ejercicios en 10 minutos, sin calculadora' })),
+            h('a', { class: 'quick__item', href: '#bits' }, h('b', { text: 'Laboratorio de bits' }), h('span', { text: 'Red, subred y host, bit a bit' })))),
         h('section', { class: 'panel plan', 'aria-labelledby': 'plan-h' },
           h('h2', { id: 'plan-h', text: 'Planes' }),
           h('dl', {},
@@ -165,7 +170,20 @@ function viewHome() {
             h('div', { class: 'bar', role: 'progressbar', 'aria-label': 'Unidades dominadas', 'aria-valuemin': 0, 'aria-valuemax': total, 'aria-valuenow': mastered }, bar)),
           h('div', { class: 'stat' }, h('span', { text: 'Preguntas en tu mazo' }), h('b', { text: cards })),
           h('div', { class: 'stat' }, h('span', { text: 'Nivel de subneteo' }), h('b', { text: `${state.practice.level}/4` })),
-          h('div', { class: 'stat' }, h('span', { text: 'Días estudiados' }), h('b', { text: state.days.length })))),
+          h('div', { class: 'stat' }, h('span', { text: 'Mejor reto de 60 s' }), h('b', { text: state.drills.best })),
+          h('div', { class: 'stat' }, h('span', { text: 'Días estudiados' }), h('b', { text: state.days.length }))),
+        h('h3', { class: 'unitbars__h', text: 'Por unidad' }),
+        h('ul', { class: 'unitbars' }, data.unidades.map((u, i) => {
+          const st = state.units[u.id];
+          const pct = st?.best ?? 0;
+          const fill = h('span');
+          fill.style.width = `${pct}%`;
+          return h('li', {},
+            h('a', { class: 'unitbar', href: `#unidad/${u.id}` },
+              h('span', { class: 'unitbar__name' }, h('span', { class: 'unitbar__n mono', text: String(i + 1).padStart(2, '0') }), u.titulo),
+              h('span', { class: 'unitbar__pct mono', text: st?.mastered ? 'Dominada' : st?.attempts ? `${pct} %` : 'Sin empezar' }),
+              h('span', { class: `bar unitbar__bar${st?.mastered ? ' unitbar__bar--done' : ''}`, role: 'progressbar', 'aria-label': `Mejor resultado en ${u.titulo}`, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct }, fill)));
+        }))),
     )));
 }
 
@@ -235,6 +253,7 @@ function viewUnitQuiz(id) {
         h('p', { text: `${ok} de ${total} correctas. ${passed
           ? 'Estas preguntas vuelven a tu repaso en los próximos días para que no se olviden.'
           : 'Las que fallaste vuelven mañana en tu repaso. Relee los puntos clave y vuelve a intentarlo: saldrán otras preguntas.'}` }),
+        passed && configured && !currentUser() && !state.flags.syncNudge ? syncNudge() : null,
         h('div', { class: 'row' },
           passed && next
             ? h('a', { class: 'btn btn--primary', href: `#unidad/${next.id}`, text: `Ir a ${next.titulo}` })
@@ -243,6 +262,16 @@ function viewUnitQuiz(id) {
       holder.querySelector('h2').focus();
     },
   });
+}
+
+/** Aviso discreto, una sola vez, para no perder el avance si se borran los datos del navegador. */
+function syncNudge() {
+  const box = h('div', { class: 'notice notice--ok nudge' },
+    h('p', { text: 'Tu avance está solo en este dispositivo. Crea una cuenta gratis para no perderlo si borras los datos o cambias de celular.' }),
+    h('div', { class: 'row' },
+      h('a', { class: 'btn btn--primary btn--sm', href: '#cuenta/crear', text: 'Crear cuenta' }),
+      h('button', { class: 'btn btn--ghost btn--sm', type: 'button', text: 'Ahora no', onclick: () => { state.flags.syncNudge = true; save(); box.remove(); } })));
+  return box;
 }
 
 function viewReview() {
@@ -257,7 +286,13 @@ function viewReview() {
       h('a', { class: 'btn btn--primary', href: '#aprender', text: any ? 'Estudiar otra unidad' : 'Elegir una unidad' })));
     return;
   }
-  const qs = shuffle(ids).slice(0, REVIEW_SIZE).map((id) => data.questions.get(id));
+  // Primero lo que más se falla (y lo que está en las cajas bajas); el resto, mezclado.
+  const priority = (id) => {
+    const c = state.cards[id];
+    const fails = c.log.filter(([, ok]) => ok === 0).length;
+    return fails * 2 + (5 - c.box) + Math.random();
+  };
+  const qs = ids.sort((a, b) => priority(b) - priority(a)).slice(0, REVIEW_SIZE).map((id) => data.questions.get(id));
   const holder = h('div');
   app.replaceChildren(h('div', {},
     h('header', { class: 'view-head' },
@@ -296,7 +331,7 @@ function route() {
   handleAuthRedirect();
   const parts = (location.hash.replace(/^#\/?/, '') || 'inicio').split('/');
   const [name, id, sub] = parts;
-  const navKey = name === 'unidad' ? 'aprender' : name === 'bits' ? 'practica' : name;
+  const navKey = name === 'unidad' ? 'aprender' : ['bits', 'reto', 'examen'].includes(name) ? 'practica' : name;
   updateAccountLink();
   for (const a of document.querySelectorAll('[data-nav]')) {
     const isDesktopRail = matchMedia('(min-width: 761px)').matches;
@@ -313,8 +348,10 @@ function route() {
     case 'unidad': withData(kind, () => { if (sub === 'prueba') viewUnitQuiz(id); else viewUnit(id); done(); }); break;
     case 'repasar': withData(kind, () => { viewReview(); done(); }); break;
     case 'practica': renderPractice(app, state, save); app.setAttribute('aria-busy', 'false'); break;
-    case 'calculadora': renderCalculator(app); app.setAttribute('aria-busy', 'false'); break;
-    case 'asistente': renderChat(app); done(); break;
+    case 'calculadora': if (examActive()) renderBlocked(app, 'Calculadora bloqueada'); else renderCalculator(app); app.setAttribute('aria-busy', 'false'); break;
+    case 'asistente': if (examActive()) renderBlocked(app, 'Asistente bloqueado'); else renderChat(app); done(); break;
+    case 'reto': renderDrill(app, state, save); app.setAttribute('aria-busy', 'false'); break;
+    case 'examen': renderExam(app, state, save); app.setAttribute('aria-busy', 'false'); break;
     case 'bits': renderBits(app, state, save); app.setAttribute('aria-busy', 'false'); break;
     case 'cuenta':
       if (id === 'nueva-clave') renderNewPassword(app);

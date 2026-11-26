@@ -37,6 +37,15 @@ export function mergeProgress(a, b) {
   const pb = b.practice ?? {};
   out.practice = (pb.level ?? 1) > (pa.level ?? 1) ? { level: pb.level, streak: pb.streak ?? 0 } : { level: pa.level ?? 1, streak: pa.streak ?? 0 };
   out.days = [...new Set([...(a.days ?? []), ...(b.days ?? [])])].sort().slice(-400);
+  const da = a.drills ?? {};
+  const db = b.drills ?? {};
+  out.drills = { best: Math.max(da.best ?? 0, db.best ?? 0), examBest: Math.max(da.examBest ?? 0, db.examBest ?? 0), types: {} };
+  for (const t of new Set([...Object.keys(da.types ?? {}), ...Object.keys(db.types ?? {})])) {
+    const x = da.types?.[t] ?? { ok: 0, fail: 0 };
+    const y = db.types?.[t] ?? { ok: 0, fail: 0 };
+    out.drills.types[t] = { ok: Math.max(x.ok, y.ok), fail: Math.max(x.fail, y.fail) };
+  }
+  out.flags = { ...(b.flags ?? {}), ...(a.flags ?? {}) };
   return out;
 }
 
