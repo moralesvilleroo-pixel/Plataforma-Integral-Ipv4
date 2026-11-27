@@ -86,18 +86,49 @@ async function accessToken() {
   if (session.expires_at - 60 > Date.now() / 1000) return session.access_token;
   refreshing ??= request('/auth/v1/token?grant_type=refresh_token', { method: 'POST', auth: false, body: { refresh_token: session.refresh_token } })
     .then((s) => { setSession(s); return s.access_token; })
-    .catch(() => { setSession(null); return null; })
+    .catch((err) => {
+      // Sin conexión se conserva la sesión para reintentar; si el servidor rechaza el token, se cierra.
+      if (err.code === 'network') throw err;
+      setSession(null);
+      return null;
+    })
     .finally(() => { refreshing = null; });
   return refreshing;
 }
 
 // ---------- Auth ----------
+// Flujo PKCE: el enlace de regreso solo trae un código de un uso (?code=...), nunca los tokens.
+// El código solo se puede canjear con el verificador que se guardó en este mismo dispositivo.
 
+const PKCE_KEY = 'subnetpro:pkce';
+const PKCE_TTL = 24 * 3600 * 1000;
 const redirectTo = () => `${location.origin}${location.pathname}`;
 
+function b64url(bytes) {
+  let bin = '';
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+/** Crea y guarda un verificador para este intento; devuelve el desafío que viaja a Supabase. */
+async function newChallenge(kind) {
+  const verifier = b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
+  try { localStorage.setItem(PKCE_KEY, JSON.stringify({ verifier, kind, at: Date.now() })); } catch { /* sin almacenamiento el canje fallará y se avisa */ }
+  return { code_challenge: b64url(digest), code_challenge_method: 's256' };
+}
+
+function takeVerifier() {
+  let pending = null;
+  try { pending = JSON.parse(localStorage.getItem(PKCE_KEY) ?? 'null'); localStorage.removeItem(PKCE_KEY); } catch { /* nada guardado */ }
+  if (!pending || typeof pending.verifier !== 'string' || Date.now() - pending.at > PKCE_TTL) return null;
+  return pending;
+}
+
 export async function signUp(email, password) {
+  const pkce = await newChallenge('signup');
   const data = await request(`/auth/v1/signup?redirect_to=${encodeURIComponent(redirectTo())}`, {
-    method: 'POST', auth: false, body: { email, password },
+    method: 'POST', auth: false, body: { email, password, ...pkce },
   });
   if (data?.access_token) { setSession(data); return { needsConfirmation: false }; }
   return { needsConfirmation: true };
@@ -108,31 +139,53 @@ export async function signIn(email, password) {
 }
 
 export async function signOut() {
-  try { await request('/auth/v1/logout', { method: 'POST' }); } catch { /* se cierra localmente igual */ }
+  try { await request('/auth/v1/logout?scope=global', { method: 'POST' }); } catch { /* se cierra localmente igual */ }
   setSession(null);
 }
 
-/** Inicio con Google: Supabase hace el intercambio y devuelve los tokens en el enlace de regreso. */
-export function signInWithGoogle() {
+export async function signInWithGoogle() {
   if (!configured) throw new SupaError('not_configured', 'Las cuentas aún no están activadas en esta versión.', 0);
-  location.assign(`${base}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo())}`);
+  const { code_challenge: cc, code_challenge_method: cm } = await newChallenge('oauth');
+  location.assign(`${base}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo())}&code_challenge=${cc}&code_challenge_method=${cm}`);
 }
 
-export const recoverPassword = (email) =>
-  request(`/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo())}`, { method: 'POST', auth: false, body: { email } });
+export async function recoverPassword(email) {
+  const pkce = await newChallenge('recovery');
+  return request(`/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo())}`, { method: 'POST', auth: false, body: { email, ...pkce } });
+}
 
 export const updatePassword = (password) => request('/auth/v1/user', { method: 'PUT', body: { password } });
 
-/** Lee los tokens que Supabase deja en el enlace del correo. Devuelve el tipo de enlace o el error. */
-export function consumeAuthRedirect() {
-  const raw = location.hash.replace(/^#/, '');
-  if (!/(^|&)(access_token|error)=/.test(raw)) return null;
-  const p = new URLSearchParams(raw);
-  history.replaceState(null, '', `${location.pathname}${location.search}`);
-  if (p.get('error')) return { error: p.get('error_description') ?? 'El enlace no es válido o ya venció.' };
-  setSession({ access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), expires_in: p.get('expires_in') });
-  request('/auth/v1/user').then((u) => setSession({ ...session, user: u })).catch(() => {});
-  return { type: p.get('type') ?? 'signup' };
+/** ¿La URL trae el regreso de Google o de un enlace de correo? */
+export function hasAuthRedirect() {
+  const q = new URLSearchParams(location.search);
+  return q.has('code') || q.has('error') || /(^|[#&])(access_token|error)=/.test(location.hash);
+}
+
+/** Canjea el código del enlace por una sesión y deja la URL limpia. Devuelve el tipo de enlace o el error. */
+export async function consumeAuthRedirect() {
+  const q = new URLSearchParams(location.search);
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const code = q.get('code');
+  const error = q.get('error_description') ?? h.get('error_description') ?? q.get('error') ?? h.get('error');
+  const hadTokens = h.has('access_token');
+  // La URL se limpia siempre antes de cualquier otra cosa: el código no debe quedar en el historial.
+  history.replaceState(null, '', `${location.pathname}#cuenta`);
+  if (error) return { error: 'El enlace no es válido o ya venció. Pide uno nuevo.' };
+  // Tokens en la URL (flujo implícito antiguo): se descartan; ya no se aceptan sesiones por ese camino.
+  if (hadTokens) return { error: 'Ese enlace es de una versión anterior. Inicia sesión o pide un enlace nuevo.' };
+  if (!code) return null;
+  const pending = takeVerifier();
+  if (!pending) {
+    return { type: 'no-verifier', error: 'Abre el enlace en el mismo dispositivo y navegador donde lo pediste. Si era para activar tu cuenta, ya quedó activada: inicia sesión.' };
+  }
+  try {
+    const s = await request('/auth/v1/token?grant_type=pkce', { method: 'POST', auth: false, body: { auth_code: code, code_verifier: pending.verifier } });
+    setSession(s);
+    return { type: pending.kind };
+  } catch {
+    return { error: 'El enlace ya se usó o venció. Pide uno nuevo.' };
+  }
 }
 
 // ---------- Datos ----------

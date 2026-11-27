@@ -1,0 +1,8 @@
+// Almacenamiento en memoria para correr en Node los módulos que usan localStorage.
+const mem = new Map();
+globalThis.localStorage = {
+  getItem: (k) => (mem.has(k) ? mem.get(k) : null),
+  setItem: (k, v) => { mem.set(k, String(v)); },
+  removeItem: (k) => { mem.delete(k); },
+  clear: () => mem.clear(),
+};

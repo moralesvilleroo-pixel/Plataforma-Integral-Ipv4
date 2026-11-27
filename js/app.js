@@ -8,7 +8,7 @@ import { renderChat } from './chat.js';
 import { renderBits } from './bits.js';
 import { renderDrill, renderExam, renderBlocked, examActive } from './drills.js';
 import { renderTheory } from './theory.js';
-import { configured, currentUser, onAuthChange, consumeAuthRedirect } from './supa.js';
+import { configured, currentUser, onAuthChange, consumeAuthRedirect, hasAuthRedirect } from './supa.js';
 import { syncNow, schedulePush } from './sync.js';
 
 const MASTERY = 80;
@@ -346,7 +346,6 @@ function viewNotFound() {
 let currentKind = '';
 
 function route() {
-  handleAuthRedirect();
   const parts = (location.hash.replace(/^#\/?/, '') || 'inicio').split('/');
   const [name, id, sub] = parts;
   const navKey = name === 'unidad' ? 'aprender' : ['bits', 'reto', 'examen'].includes(name) ? 'practica' : name;
@@ -482,15 +481,17 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').catch(() => { /* sin service worker la app funciona igual, solo que no offline */ });
 }
 
-/** Procesa el enlace del correo (confirmación o recuperación) y deja la URL limpia. */
-function handleAuthRedirect() {
-  const redirect = configured ? consumeAuthRedirect() : null;
+/** Procesa el regreso de Google o del enlace del correo (confirmación o recuperación). */
+async function handleAuthRedirect() {
+  const redirect = configured ? await consumeAuthRedirect() : null;
   if (!redirect) return;
   if (redirect.error) {
     authMessage = { kind: 'error', text: redirect.error };
     history.replaceState(null, '', '#cuenta');
   } else if (redirect.type === 'recovery') {
     history.replaceState(null, '', '#cuenta/nueva-clave');
+  } else if (redirect.type === 'oauth') {
+    history.replaceState(null, '', '#inicio');
   } else {
     authMessage = { kind: 'ok', text: 'Cuenta activada. Ya puedes usar el asistente y tu progreso se guarda en la nube.' };
     history.replaceState(null, '', '#cuenta');
@@ -506,6 +507,11 @@ onAuthChange(() => {
   updateAccountLink();
 });
 
-route();
+if (hasAuthRedirect()) {
+  app.replaceChildren(h('section', { class: 'panel state' }, h('h1', { tabindex: '-1', text: 'Iniciando sesión…' }), h('div', { class: 'sk sk-line sk-w70' })));
+  handleAuthRedirect().finally(route);
+} else {
+  route();
+}
 ensureData().catch(() => { /* el error se muestra en la vista que lo necesita */ });
 if (currentUser()) syncNow(state, applyMerged);

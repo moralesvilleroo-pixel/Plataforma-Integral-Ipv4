@@ -66,7 +66,7 @@ function googleButton(out) {
   const btn = h('button', { class: 'btn btn--google', type: 'button' }, googleLogo(), h('span', { text: 'Continuar con Google' }));
   btn.addEventListener('click', () => {
     btn.disabled = true;
-    try { signInWithGoogle(); } catch (err) { btn.disabled = false; out.replaceChildren(notice('error', err.message)); }
+    signInWithGoogle().catch((err) => { btn.disabled = false; out.replaceChildren(notice('error', err.message)); });
   });
   return btn;
 }

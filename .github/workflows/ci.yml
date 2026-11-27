@@ -1,0 +1,26 @@
+# Corre en cada cambio: si algo falla, GitHub lo marca en rojo antes de que llegue a la app.
+name: Pruebas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Sintaxis de todos los módulos
+        run: for f in $(find js sw.js -name '*.js'); do node --check "$f"; done
+      - name: TypeScript para revisar la Edge Function
+        run: npm install --no-save --no-package-lock typescript@5
+      - name: Pruebas
+        run: node --test "tests/*.test.mjs"

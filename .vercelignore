@@ -1,3 +1,5 @@
 # Material para el panel de Supabase y notas internas: no se publica en la web.
 supabase/
 LEEME.md
+tests/
+.github/
